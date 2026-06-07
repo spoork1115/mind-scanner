@@ -154,6 +154,8 @@ export async function POST(request) {
       name: witNickname,
       relation: relationRecord ? {
         hostName: hostName,
+        hostMbti: relationRecord.hostMbti,
+        guestMbti: relationRecord.guestMbti,
         influenceType: relationRecord.influenceType,
         influenceTitle: relationRecord.influenceTitle,
         influenceDesc: relationRecord.influenceDesc,

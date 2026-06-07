@@ -356,7 +356,7 @@ function ResultContent() {
             <div className="match-user-box">
               <span className="user-badge">호스트</span>
               <div className="avatar-circle host-color">
-                👤
+                <Mascot size={54} mbti={resultData.relation.hostMbti || 'ENFP'} emotion="smile" />
               </div>
               <span className="user-name">{resultData.relation.hostName}</span>
             </div>
@@ -385,7 +385,7 @@ function ResultContent() {
             <div className="match-user-box">
               <span className="user-badge guest-badge">나</span>
               <div className="avatar-circle guest-color">
-                ✨
+                <Mascot size={54} mbti={resultData.relation.guestMbti || resultData.mbti} emotion={resultData.mascot || 'smile'} />
               </div>
               <span className="user-name">당신</span>
             </div>
@@ -408,7 +408,7 @@ function ResultContent() {
       {/* 2. 상단 마스크 캐릭터 영역 (나의 분석 결과) */}
       <div className="result-header">
         <span className="type-badge">{resultData.mbti} 유형</span>
-        <Mascot emotion={resultData.mascot} size={110} />
+        <Mascot emotion={resultData.mascot} mbti={resultData.mbti} size={110} />
         <h1 className="result-title">"{resultData.name || resultData.title}"</h1>
         <p className="result-desc">{resultData.description}</p>
       </div>
@@ -581,7 +581,9 @@ function ResultContent() {
 
               {/* 중앙 노드 (나) */}
               <div className="center-node host-node">
-                <div className="node-avatar">👤</div>
+                <div className="node-avatar">
+                  <Mascot size={54} mbti={resultData.mbti} emotion={resultData.mascot} />
+                </div>
                 <span className="node-name">나</span>
               </div>
 
@@ -597,6 +599,7 @@ function ResultContent() {
                 const targetName = rel.hostId === resultId ? rel.guestName : rel.hostName || '동료';
                 const targetRole = rel.hostId === resultId ? rel.guestRole : rel.hostRole || '호스트';
                 const targetZodiac = rel.hostId === resultId ? rel.guestZodiac : rel.hostZodiac || '✨';
+                const targetMbti = rel.hostId === resultId ? rel.guestMbti : rel.hostMbti || 'ENFP';
 
                 return (
                   <div key={`node-${rel.id}`} className="guest-node-wrapper" style={{ transform: `translate(${x}px, ${y}px)` }}>
@@ -604,7 +607,9 @@ function ResultContent() {
                       className={`guest-node-btn ${selectedRelation?.id === rel.id ? 'active' : ''} ${rel.hostId !== resultId ? 'host-partner' : ''}`}
                       onClick={() => setSelectedRelation(rel)}
                     >
-                      <span className="guest-node-zodiac">{targetZodiac}</span>
+                      <span className="guest-node-zodiac">
+                        <Mascot size={32} mbti={targetMbti} emotion="smile" />
+                      </span>
                       <span className="guest-node-name">{targetName}</span>
                     </button>
                   </div>
@@ -1067,6 +1072,8 @@ function ResultContent() {
           font-size: 24px;
           background-color: #fff;
           box-shadow: var(--shadow-sm);
+          overflow: visible;
+          position: relative;
         }
         .avatar-circle.host-color {
           border: 3px solid #ff6584;
@@ -1306,8 +1313,12 @@ function ResultContent() {
           box-shadow: 0 4px 10px rgba(142, 68, 173, 0.3);
         }
         .node-avatar {
-          font-size: 24px;
-          line-height: 1;
+          width: 54px;
+          height: 54px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          overflow: visible;
         }
         .node-name {
           font-size: 10.5px;
@@ -1347,8 +1358,12 @@ function ResultContent() {
           border-color: #3498db;
         }
         .guest-node-zodiac {
-          font-size: 14px;
-          line-height: 1;
+          width: 32px;
+          height: 32px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          overflow: visible;
         }
         .guest-node-name {
           font-size: 8px;
