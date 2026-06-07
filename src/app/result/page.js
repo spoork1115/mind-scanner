@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Mascot from '@/components/Mascot';
 import { 
   Share2, Link2, RotateCcw, Heart, AlertTriangle, 
-  Coffee, Award, User, HelpCircle, 
+  Coffee, Sparkles, Award, User, HelpCircle, 
   ChevronDown, ChevronUp, Network, Check, ShoppingBag
 } from 'lucide-react';
 
