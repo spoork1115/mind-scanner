@@ -515,45 +515,7 @@ function ResultContent() {
         <p className="content-text">{resultData.fortune}</p>
       </div>
 
-      {/* 6. 신뢰성을 위한 분석 이론 및 논문 근거 */}
-      <div className="section-card card theory-accordion-card">
-        <button 
-          className="accordion-trigger-btn"
-          onClick={() => setShowTheory(!showTheory)}
-        >
-          <div className="trigger-left">
-            <HelpCircle size={18} className="icon-blue" />
-            <span>이 분석은 어떻게 도출되었나요? (이론적 근거)</span>
-          </div>
-          {showTheory ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-        </button>
 
-        {showTheory && (
-          <div className="accordion-content-box fade-in">
-            <div className="theory-item">
-              <h4>1. 칼 융의 심리유형론 및 MBTI</h4>
-              <p>
-                본 진단 결과는 칼 융(Carl Jung)의 심리유형론(Psychological Types)을 현대 조직 행동에 맞추어 재해석한 결과입니다. 
-                각 의사결정 방식(T/F)과 세상을 보는 창(S/N)을 조직 내 상호작용 지표로 계량화하여 직장인 유형을 정의했습니다.
-              </p>
-              <span className="cite-text">
-                📚 <em>Myers, I. B. (1980). Gifts Differing: Understanding Personality Type.</em>
-              </span>
-            </div>
-
-            <div className="theory-item">
-              <h4>2. 크럼볼츠의 계획된 우연 이론</h4>
-              <p>
-                직장 생활의 예상치 못한 해프닝과 인적 갈등을 커리어적 기회로 전환하는 능력을 진단합니다. 
-                분석에 제공된 행동 지침은 존 크럼볼츠(John Krumboltz) 교수의 5대 핵심 태도(호기심, 유연성, 인내성, 낙관성, 위험 감수)를 처방용 알고리즘으로 설계한 것입니다.
-              </p>
-              <span className="cite-text">
-                📚 <em>Mitchell, K. E., Levin, A. S., & Krumboltz, J. D. (1999). Planned Happenstance: Constructing Unexpected Career Opportunities.</em>
-              </span>
-            </div>
-          </div>
-        )}
-      </div>
 
       {/* 7. 조심할 일 */}
       <div className="section-card card warning-card">
@@ -633,8 +595,8 @@ function ResultContent() {
 
                 // 양방향 노드 판별: 내가 게스트인지 호스트인지에 따라 대상 이름 표기
                 const targetName = rel.hostId === resultId ? rel.guestName : rel.hostName || '동료';
-                const targetRole = rel.hostId === resultId ? rel.guestRole : '호스트';
-                const targetZodiac = rel.hostId === resultId ? rel.guestZodiac : '✨';
+                const targetRole = rel.hostId === resultId ? rel.guestRole : rel.hostRole || '호스트';
+                const targetZodiac = rel.hostId === resultId ? rel.guestZodiac : rel.hostZodiac || '✨';
 
                 return (
                   <div key={`node-${rel.id}`} className="guest-node-wrapper" style={{ transform: `translate(${x}px, ${y}px)` }}>
@@ -658,7 +620,7 @@ function ResultContent() {
                   <span className="compat-score-badge">{selectedRelation.compatibilityScore}%</span>
                 </div>
                 <p className="detail-role">
-                  💼 {selectedRelation.hostId === resultId ? `${selectedRelation.guestRole} (${selectedRelation.guestZodiac}띠)` : '초대해준 호스트'}
+                  💼 {selectedRelation.hostId === resultId ? `${selectedRelation.guestRole} (${selectedRelation.guestZodiac}띠)` : `${selectedRelation.hostRole || '호스트'} (${selectedRelation.hostZodiac || '✨'}띠)`}
                 </p>
                 <div className="detail-influence">
                   <strong>{selectedRelation.influenceTitle}</strong>
@@ -691,7 +653,7 @@ function ResultContent() {
           <div className="guest-list">
             {relations.map((rel) => {
               const targetName = rel.hostId === resultId ? rel.guestName : rel.hostName || '호스트';
-              const targetRole = rel.hostId === resultId ? rel.guestRole : '초대한 호스트';
+              const targetRole = rel.hostId === resultId ? rel.guestRole : rel.hostRole || '초대한 호스트';
               return (
                 <div key={`list-${rel.id}`} className="guest-list-item card" onClick={() => setSelectedRelation(rel)}>
                   <div className="item-left">
@@ -742,6 +704,46 @@ function ResultContent() {
             </a>
           ))}
         </div>
+      </div>
+
+      {/* 6. 신뢰성을 위한 분석 이론 및 논문 근거 (맨 하단 위치 조정) */}
+      <div className="section-card card theory-accordion-card">
+        <button 
+          className="accordion-trigger-btn"
+          onClick={() => setShowTheory(!showTheory)}
+        >
+          <div className="trigger-left">
+            <HelpCircle size={18} className="icon-blue" />
+            <span>이 분석은 어떻게 도출되었나요? (이론적 근거)</span>
+          </div>
+          {showTheory ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+        </button>
+
+        {showTheory && (
+          <div className="accordion-content-box fade-in">
+            <div className="theory-item">
+              <h4>1. 칼 융의 심리유형론 및 MBTI</h4>
+              <p>
+                본 진단 결과는 칼 융(Carl Jung)의 심리유형론(Psychological Types)을 현대 조직 행동에 맞추어 재해석한 결과입니다. 
+                각 의사결정 방식(T/F)과 세상을 보는 창(S/N)을 조직 내 상호작용 지표로 계량화하여 직장인 유형을 정의했습니다.
+              </p>
+              <span className="cite-text">
+                📚 <em>Myers, I. B. (1980). Gifts Differing: Understanding Personality Type.</em>
+              </span>
+            </div>
+
+            <div className="theory-item">
+              <h4>2. 크럼볼츠의 계획된 우연 이론</h4>
+              <p>
+                직장 생활의 예상치 못한 해프닝과 인적 갈등을 커리어적 기회로 전환하는 능력을 진단합니다. 
+                분석에 제공된 행동 지침은 존 크럼볼츠(John Krumboltz) 교수의 5대 핵심 태도(호기심, 유연성, 인내성, 낙관성, 위험 감수)를 처방용 알고리즘으로 설계한 것입니다.
+              </p>
+              <span className="cite-text">
+                📚 <em>Mitchell, K. E., Levin, A. S., & Krumboltz, J. D. (1999). Planned Happenstance: Constructing Unexpected Career Opportunities.</em>
+              </span>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* 11. 공유 및 바이럴 링크 생성 영역 */}
@@ -816,8 +818,12 @@ function ResultContent() {
           line-height: 1.45;
         }
         .section-card {
-          padding: 16px;
-          margin-bottom: 8px;
+          padding: 24px 20px;
+          margin-bottom: 24px;
+          border-radius: var(--radius-md);
+          background-color: #ffffff;
+          box-shadow: 0 4px 16px rgba(30, 37, 43, 0.05) !important;
+          border: 1px solid rgba(255, 111, 60, 0.06) !important;
         }
         .card-header-row {
           display: flex;
@@ -932,9 +938,10 @@ function ResultContent() {
           background-color: #fafafa;
         }
         .tarot-card-image-box.single-card {
-          width: 150px;
-          height: 240px;
+          width: 220px;
+          height: 352px;
           flex-shrink: 0;
+          margin: 0 auto 16px auto;
         }
         .tarot-card-img-large {
           width: 100%;

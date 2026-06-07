@@ -177,7 +177,25 @@ export function generateWitNickname(mbti, zodiac, role, tarotId) {
   else if (role.includes('부장') || role.includes('수석')) roleTitle = '부장';
   else if (role.includes('임원') || role.includes('대표')) roleTitle = '대표';
 
-  return `${modifier} ${zodiac}${roleTitle}`;
+  // 띠에 의존하지 않는 다양한 현실 직장인 명사 조합 풀
+  const OFFICE_ITEM_MODIFIERS = [
+    '아아메 수혈 중인', '칼퇴를 갈망하는', '월요병에 걸린', '슬랙 대화방 요정', '회의록 요약기', 
+    '보고서 작성 머신', '야근이 체질인', '메일 검토 중인', '엑셀 수식 파괴자', '키보드 타격왕',
+    '탕비실 스낵 사냥꾼', '법인카드가 탐나는', '폰트 크기에 예민한', '텀블러 수집 장인', '삼선슬리퍼 애호가',
+    '모니터만 노려보는', '프로 월급루팡 꿈나무', '당 충전이 시급한', '듀얼모니터 집착러', '슬랙 답장이 1초인'
+  ];
+
+  // 결정론적(deterministic) 랜덤 생성을 위해 문자열 해시 생성
+  const hashSource = (mbti || '') + (zodiac || '') + (role || '') + (tarotId || '');
+  let hash = 0;
+  for (let i = 0; i < hashSource.length; i++) {
+    hash = hashSource.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const index = Math.abs(hash) % OFFICE_ITEM_MODIFIERS.length;
+  const officeItem = OFFICE_ITEM_MODIFIERS[index];
+
+  // 띠를 제거하고 더 세련되고 다양한 직장인 닉네임 생성
+  return `${officeItem} ${modifier} ${roleTitle}`;
 }
 
 export function calculateScore(host, guest) {
@@ -209,41 +227,69 @@ export function analyzeRelationship(host, guest, score) {
   if (score >= 85) {
     return {
       type: 'savior',
-      title: '오늘의 구원자 👼',
-      desc: `답답한 회의나 곤란한 상황에서 기막힌 타이밍의 쉴드로 당신을 구해줄 은인입니다. 오늘 이 동료에게 따뜻한 음료 한 잔을 선물해 보세요!`
+      title: '엑셀 구원자 👼',
+      desc: `기막힌 엑셀 수식 쉴드나 급작스러운 기획 변경 회의에서 쉴드로 당신을 구해줄 오피스 귀인! 이분께 커피 한 잔을 선물해 보세요.`
     };
   }
   if (score <= 55) {
     return {
       type: 'villain',
-      title: '피해야 할 대상 ☠️',
-      desc: `오늘 하루만큼은 사소한 의견 차이도 스파크로 번질 수 있습니다. 메신저 답장은 3분 정도 여유를 두고 차분하게 하시는 것을 추천합니다.`
+      title: '메신저 스나이퍼 ☠️',
+      desc: `메신저 칼답장 폭탄으로 심장을 쫄깃하게 만들 수 있는 경계 대상! 메일이나 슬랙 발송 전에 차분히 한 템포 쉬어가세요.`
+    };
+  }
+  if (hMbti === gMbti) {
+    return {
+      type: 'mirror',
+      title: '데칼코마니 도플갱어 👥',
+      desc: `생각하는 방식과 일 처리 속도, 심지어 정시 퇴근 집착도까지 소름 돋게 일치하는 소울메이트! 같이 일할 때 거울을 보는 듯합니다.`
     };
   }
   if (hMbti[1] === 'N' && gMbti[1] === 'N') {
     return {
       type: 'booster',
-      title: '아이디어 부스터 🚀',
-      desc: `두 사람이 탕비실에서 나누는 사소한 잡담 속에서 회사 미래를 바꿀 대박 기획 아이디어가 탄생할 수 있습니다. 적극적인 스몰토크를 권장합니다.`
+      title: '아이디어 펌프기 🚀',
+      desc: `두 분이 탕비실에서 나누는 사소한 수다 속에서 엄청난 미래 기획서가 탄생합니다. 적극적으로 귓속말과 대화를 권장합니다.`
+    };
+  }
+  if (hMbti[3] === 'P' && gMbti[3] === 'P') {
+    return {
+      type: 'slacker',
+      title: '월요 루팡 동맹군 🦝',
+      desc: `마감 직전의 아슬아슬한 스릴을 즐기며, 몰래 간식이나 쇼핑 아이템 링크를 메신저로 슬쩍 주고받는 단짝 영혼의 메이트!`
+    };
+  }
+  if (hMbti[0] === 'E' && gMbti[0] === 'E' && hMbti[1] === 'S' && gMbti[1] === 'S') {
+    return {
+      type: 'coffee_mate',
+      title: '탕비실 사냥꾼 🍪',
+      desc: `새로운 신상 간식이 사내 탕비실에 보이면 누구보다 빠르게 메신저로 제보하여 서로의 혈당을 올려주는 고마운 탕비실 사냥 동지!`
     };
   }
   if (hMbti[2] === 'F' && gMbti[2] === 'F') {
     return {
       type: 'charger',
-      title: '감정 충전기 🔋',
-      desc: `지쳐있는 당신의 멘탈을 따뜻한 공감과 맞장구 리액션으로 100% 충전해 줄 햇살 같은 존재입니다. 오늘 커피 타임 파트너로 제격입니다.`
+      title: '아아메 수혈기 🔋',
+      desc: `업무 피로로 너덜너덜해진 당신의 멘탈에 리액션과 따뜻한 맞장구 공감을 무한으로 수혈해 주는 배터리 같은 소중한 존재!`
     };
   }
   if (hMbti[2] === 'T' && gMbti[2] === 'T') {
     return {
       type: 'corrector',
-      title: '팩트 폭격기 🎯',
-      desc: `오늘 당신의 보고서에서 놓치기 쉬운 오탈자나 수식 오류를 칼같이 찾아내 줄 매서운 조력자입니다. 제출 전에 이분께 먼저 슬쩍 보여주세요.`
+      title: '현미경 검열관 🎯',
+      desc: `내 기안서의 아주 미세한 수식 오류나 오탈자마저 현미경처럼 날카롭게 발견해 주는 칼잡이 조력자! 제출 전 이분께 먼저 확인을 구하세요.`
+    };
+  }
+  if (hMbti[3] === 'J' && gMbti[3] === 'J') {
+    return {
+      type: 'guru',
+      title: '해탈 구루 동맹 🧘',
+      desc: `갑자기 쏟아진 무리한 요구 사항에도 당황하지 않고, 허허 웃으며 체계적으로 플랜 B를 조용히 완성해버리는 최고의 기획자 조합!`
     };
   }
   return {
     type: 'workmate',
-    title: '야근 동반자 ☕',
-    desc: `정신없는 업무 일정 속에서 함께 퇴근 송을 흥얼거리며 버텨줄 의리파 동료입니다. 지친 오후 4시, 당 보충 젤리를 나눠 먹으며 힘내세요.`
+    title: '야근 앤 칩스 ☕',
+    desc: `정신없는 마감 일정 속에서 눈물의 간식을 나눠 먹으며 끝까지 의리로 함께 야근 퇴근 송을 흥얼거릴 든든한 동반자입니다.`
   };
 }

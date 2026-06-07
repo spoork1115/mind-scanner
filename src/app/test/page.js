@@ -249,16 +249,17 @@ export default function TestPage() {
           flex-direction: column;
           height: auto;
           min-height: 100vh;
-          justify-content: space-between;
           font-family: 'Gowun Batang', serif;
           padding-bottom: 30px;
+          justify-content: flex-start;
+          gap: 16px;
         }
         .test-header {
           display: flex;
           align-items: center;
           gap: 12px;
           padding: 8px 0;
-          margin-bottom: 24px;
+          margin-bottom: 12px;
         }
         .back-arrow-btn {
           background: none;
@@ -292,8 +293,8 @@ export default function TestPage() {
           text-align: right;
         }
         .question-section {
-          margin-top: 20px;
-          margin-bottom: auto;
+          margin-top: 10px;
+          margin-bottom: 16px;
           padding: 10px;
         }
         .question-badge {
@@ -314,11 +315,11 @@ export default function TestPage() {
           letter-spacing: -0.3px;
         }
         .options-section {
-          margin-top: auto;
+          margin-top: 0;
           margin-bottom: 20px;
           display: flex;
           flex-direction: column;
-          gap: 4px;
+          gap: 8px;
         }
         .option-btn {
           text-align: left;

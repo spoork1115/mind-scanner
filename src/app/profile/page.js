@@ -266,7 +266,7 @@ export default function ProfilePage() {
           display: flex;
           flex-direction: column;
           height: auto;
-          padding-bottom: 40px;
+          padding-bottom: 120px;
           font-family: 'Jua', sans-serif;
         }
         .top-nav {

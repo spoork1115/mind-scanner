@@ -354,7 +354,7 @@ export default function TarotTestPage() {
           height: auto;
           min-height: 100vh;
           font-family: 'Jua', sans-serif;
-          padding-bottom: 40px;
+          padding-bottom: 120px;
         }
         .top-nav {
           display: flex;

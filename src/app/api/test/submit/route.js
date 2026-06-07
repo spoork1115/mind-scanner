@@ -109,6 +109,10 @@ export async function POST(request) {
         
         relationRecord = await db.addRelation({
           hostId: hostId,
+          hostName: hostUser.name,
+          hostMbti: hostUser.mbti,
+          hostZodiac: hostUser.zodiac,
+          hostRole: hostUser.role,
           guestId: savedRecord.id,
           guestName: savedRecord.name,
           guestBirth: profile.birthDate || '',
