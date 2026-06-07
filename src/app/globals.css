@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap');
+
 /* 전역 CSS 디자인 시스템 */
 
 :root {
@@ -31,7 +33,7 @@
 }
 
 body {
-  font-family: 'Inter', 'Noto Sans KR', sans-serif;
+  font-family: 'Gowun Batang', 'Noto Serif KR', serif;
   background-color: hsl(210, 16%, 93%); /* 전체 브라우저 배경은 연회색 */
   color: hsl(var(--text-dark));
   display: flex;
@@ -70,7 +72,7 @@ body {
 
 /* Typography */
 h1 {
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Gowun Batang', serif;
   font-size: 26px;
   font-weight: 800;
   color: hsl(var(--text-dark));
@@ -121,6 +123,7 @@ p {
   border-radius: var(--radius-sm);
   border: 2px solid hsl(210, 16%, 88%);
   font-size: 16px;
+  font-family: 'Gowun Batang', serif;
   background-color: #fff;
   color: hsl(var(--text-dark));
   outline: none;
@@ -138,6 +141,7 @@ p {
   border-radius: var(--radius-sm);
   border: 2px solid hsl(210, 16%, 88%);
   font-size: 16px;
+  font-family: 'Gowun Batang', serif;
   background-color: #fff;
   color: hsl(var(--text-dark));
   outline: none;
@@ -156,6 +160,7 @@ p {
   min-height: 54px;
   padding: 12px 24px;
   font-size: 16px;
+  font-family: 'Gowun Batang', serif;
   font-weight: 700;
   border-radius: var(--radius-lg);
   border: none;

@@ -64,6 +64,7 @@ if (!global.officeUniverseDb) {
       {
         id: 'seed-rel-1',
         hostId: 'seed-uuid-3',
+        guestId: 'seed-uuid-1',
         guestName: '김도훈 대리',
         guestBirth: '1999-04-12',
         guestZodiac: '토끼',
@@ -78,6 +79,7 @@ if (!global.officeUniverseDb) {
       {
         id: 'seed-rel-2',
         hostId: 'seed-uuid-3',
+        guestId: 'seed-uuid-4',
         guestName: '최민수 부장',
         guestBirth: '1982-10-09',
         guestZodiac: '개',
@@ -118,6 +120,13 @@ export const db = {
   // 관계 전체 조회
   getRelations: () => {
     return global.officeUniverseDb.relations;
+  },
+
+  // 특정 사용자가 호스트이거나 게스트인 관계 목록 전체 조회 (양방향 조회)
+  getRelationsByUser: (userId) => {
+    return global.officeUniverseDb.relations.filter(
+      r => r.hostId === userId || r.guestId === userId
+    );
   },
 
   // 특정 호스트에 대한 게스트의 관계도 목록 조회

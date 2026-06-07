@@ -3,18 +3,34 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { questions } from '@/data/questions';
-import { ArrowLeft, ChevronLeft } from 'lucide-react';
+import { ChevronLeft } from 'lucide-react';
 import Mascot from '@/components/Mascot';
+
+// 배열에서 지정된 개수만큼 랜덤하게 셔플 추출하는 헬퍼 함수
+function getRandomSubarray(arr, size) {
+  let shuffled = arr.slice(0);
+  let i = arr.length;
+  let temp, index;
+  while (i--) {
+    index = Math.floor((i + 1) * Math.random());
+    temp = shuffled[index];
+    shuffled[index] = shuffled[i];
+    shuffled[i] = temp;
+  }
+  return shuffled.slice(0, size);
+}
 
 export default function TestPage() {
   const router = useRouter();
 
   // 사용자 프로필 데이터 확인 및 상태 보관
   const [profile, setProfile] = useState(null);
+  const [selectedQuestions, setSelectedQuestions] = useState([]);
   const [currentIdx, setCurrentIdx] = useState(0);
   const [answers, setAnswers] = useState({}); // { questionId: 'A' or 'B' }
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // 1. 프로필 검증 및 로드
   useEffect(() => {
     const savedProfile = localStorage.getItem('office_universe_profile');
     if (!savedProfile) {
@@ -25,9 +41,34 @@ export default function TestPage() {
     setProfile(JSON.parse(savedProfile));
   }, [router]);
 
-  const currentQuestion = questions[currentIdx];
+  // 2. 질문 풀 28개 중 각 카테고리별 3개씩 무작위 추출하여 12개 질문지 세팅
+  useEffect(() => {
+    if (questions.length === 0) return;
+
+    // 카테고리별 필터링
+    const eiPool = questions.filter(q => q.type === 'EI');
+    const nsPool = questions.filter(q => q.type === 'NS');
+    const tfPool = questions.filter(q => q.type === 'TF');
+    const pjPool = questions.filter(q => q.type === 'PJ');
+
+    // 무작위로 3문항씩 샘플링
+    const sampledEi = getRandomSubarray(eiPool, 3);
+    const sampledNs = getRandomSubarray(nsPool, 3);
+    const sampledTf = getRandomSubarray(tfPool, 3);
+    const sampledPj = getRandomSubarray(pjPool, 3);
+
+    // 전체 결합 후 한번 더 무작위 셔플링
+    const testSet = [...sampledEi, ...sampledNs, ...sampledTf, ...sampledPj];
+    const shuffledTestSet = getRandomSubarray(testSet, testSet.length);
+
+    setSelectedQuestions(shuffledTestSet);
+  }, []);
+
+  const currentQuestion = selectedQuestions[currentIdx];
 
   const handleSelect = async (optionType) => {
+    if (!currentQuestion) return;
+
     // 1. 답변 기록
     const updatedAnswers = {
       ...answers,
@@ -36,7 +77,7 @@ export default function TestPage() {
     setAnswers(updatedAnswers);
 
     // 2. 다음 단계 처리
-    if (currentIdx < questions.length - 1) {
+    if (currentIdx < selectedQuestions.length - 1) {
       // 다음 문항으로 이동
       setCurrentIdx(currentIdx + 1);
     } else {
@@ -51,7 +92,7 @@ export default function TestPage() {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            profile,
+            profile, // 내부의 tarotId 포함
             answers: updatedAnswers,
             hostId: hostId || undefined
           })
@@ -70,23 +111,18 @@ export default function TestPage() {
 
           // 획득 배지 처리
           let badges = JSON.parse(localStorage.getItem('office_universe_badges') || '[]');
-          
-          // 첫 검사 완료 배지 추가
           if (!badges.includes('first_test')) {
             badges.push('first_test');
           }
-          
-          // 번아웃 위험군일 때 긍정극복 배지 추가 가능성, 혹은 일반 배지 지급
           if (result.burnout.state === 'safe' && !badges.includes('positivity')) {
             badges.push('positivity');
           }
           localStorage.setItem('office_universe_badges', JSON.stringify(badges));
 
-          // Vercel SPA 배포 특성상, 결과 페이지로 라우팅
-          // 딜레이를 2초 정도 줘서 AI 분석 로딩 화면을 충분히 보여줍니다.
+          // 딜레이를 줘서 AI 분석 로딩 화면 노출
           setTimeout(() => {
             router.push(`/result?id=${result.participantId}`);
-          }, 2200);
+          }, 2000);
         } else {
           alert('결과 제출 중 오류가 발생했습니다.');
           setIsSubmitting(false);
@@ -109,12 +145,12 @@ export default function TestPage() {
     }
   };
 
+  if (!profile || selectedQuestions.length === 0) return null;
+
   // 프로그레스 바 계산 (%)
-  const progressPercent = Math.round(((currentIdx) / questions.length) * 100);
+  const progressPercent = Math.round((currentIdx / selectedQuestions.length) * 100);
 
-  if (!profile) return null;
-
-  // AI 분석 로딩 스크린 (Progressive Disclosure & Skeleton screen 효과 연출)
+  // AI 분석 로딩 스크린
   if (isSubmitting) {
     return (
       <div className="loading-screen fade-in">
@@ -136,9 +172,10 @@ export default function TestPage() {
             display: flex;
             align-items: center;
             justify-content: center;
-            height: 100%;
+            height: 100vh;
             padding: 24px;
             background-color: hsl(34, 100%, 97%);
+            font-family: 'Gowun Batang', serif;
           }
           .loading-content {
             text-align: center;
@@ -178,7 +215,7 @@ export default function TestPage() {
         <div className="progress-bar-container">
           <div className="progress-bar-fill" style={{ width: `${progressPercent}%` }}></div>
         </div>
-        <span className="question-counter">{currentIdx + 1} / {questions.length}</span>
+        <span className="question-counter">{currentIdx + 1} / {selectedQuestions.length}</span>
       </div>
 
       {/* 중앙 질문 카드 */}
@@ -210,8 +247,11 @@ export default function TestPage() {
         .test-container {
           display: flex;
           flex-direction: column;
-          height: 100%;
+          height: auto;
+          min-height: 100vh;
           justify-content: space-between;
+          font-family: 'Gowun Batang', serif;
+          padding-bottom: 30px;
         }
         .test-header {
           display: flex;
@@ -258,7 +298,6 @@ export default function TestPage() {
         }
         .question-badge {
           display: inline-block;
-          font-family: 'Outfit', sans-serif;
           background-color: hsl(var(--primary-light));
           color: hsl(var(--primary));
           font-size: 13px;
@@ -268,8 +307,8 @@ export default function TestPage() {
           margin-bottom: 16px;
         }
         .question-text {
-          font-size: 22px;
-          line-height: 1.4;
+          font-size: 21px;
+          line-height: 1.45;
           font-weight: 700;
           color: hsl(var(--text-dark));
           letter-spacing: -0.3px;
@@ -301,7 +340,6 @@ export default function TestPage() {
           background-color: hsl(var(--primary-light));
         }
         .option-letter {
-          font-family: 'Outfit', sans-serif;
           width: 32px;
           height: 32px;
           border-radius: 50%;

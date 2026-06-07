@@ -115,7 +115,7 @@ const RESULT_TYPES = {
   INTJ: {
     title: '전략 기획실 AI',
     mascot: 'think',
-    description: '철저한 데이터 분석과 논리적 아키텍처를 바탕으로 전략을 짜는 사내 브레인! 비효율적인 시스템 개선에 관심이 많습니다.',
+    description: '철저한 데이터 분석 and 논리적 아키텍처를 바탕으로 전략을 짜는 사내 브레인! 비효율적인 시스템 개선에 관심이 많습니다.',
     fortune: '장기적인 문제점을 통찰하여 훌륭한 기획 초안을 마련하기에 더없이 좋은 날입니다. 냉철한 비전이 빛을 발합니다.',
     happenstance: '예기치 못한 장애나 시스템 한계 상황을 문제 극복의 "호기심"과 도전의 기회로 바라보세요. 혁신적인 오피스 생존법이나 자동화 단축 아이디어를 탄생시킬 수 있습니다.',
     warning: '지나치게 냉소적인 어조로 피드백을 전달하다 동료의 마음에 스크래치를 내지 않도록 조심하세요.',
@@ -220,6 +220,27 @@ function analyzeRelationship(host, guest, score) {
   };
 }
 
+// MBTI 기반 닉네임 자동 작명 헬퍼
+const MBTI_MODIFIERS = {
+  ESTJ: '철두철미 엑셀마스터', ESTP: '영업본부 불도저', ESFJ: '사내 복지 복덕방', ESFP: '워크샵 댄싱킹',
+  ENTJ: '야망 가득 PM', ENTP: '아이디어 폭격기', ENFJ: '소통의 아이콘', ENFP: '아이디어 부스터',
+  ISTJ: '정시퇴근 캘린더', ISTP: '자발적 아웃사이더', ISFJ: '보이지 않는 서포터', ISFP: '평화주의 아티스트',
+  INTJ: '전략 기획실 AI', INTP: '회의실 구석 씽크탱크', INFJ: '직장인 해탈 멘토', INFP: '회의실 구석 몽상가'
+};
+
+function generateWitNickname(mbti, zodiac, role) {
+  const modifier = MBTI_MODIFIERS[mbti] || '평화주의 아티스트';
+  let roleTitle = '사원';
+  if (role.includes('인턴') || role.includes('주니어')) roleTitle = '주니어';
+  else if (role.includes('사원') || role.includes('연구원')) roleTitle = '사원';
+  else if (role.includes('대리') || role.includes('선임')) roleTitle = '대리';
+  else if (role.includes('과장') || role.includes('차장') || role.includes('책임')) roleTitle = '과장';
+  else if (role.includes('부장') || role.includes('수석')) roleTitle = '부장';
+  else if (role.includes('임원') || role.includes('대표')) roleTitle = '대표';
+
+  return `${modifier} ${zodiac}${roleTitle}`;
+}
+
 export async function POST(request) {
   try {
     const { profile, answers, hostId } = await request.json();
@@ -260,9 +281,7 @@ export async function POST(request) {
     const baseResult = RESULT_TYPES[mbti] || RESULT_TYPES.ISFP;
     
     // 4. 계획된 우연 이론 기반 바넘 효과 통제 및 맞춤 텍스트 가공
-    // 입력된 띠와 직책 정보를 변수로 자연스럽게 문장에 심어 개인화합니다.
     const personalizedFortune = `올해 ${profile.zodiac}띠 생존 흐름과 사내 ${profile.role} 직무 역학을 결합해 분석한 결과입니다. ${baseResult.fortune}`;
-    
     const personalizedWarning = `${profile.role} 역할로서 업무 도중 ${baseResult.warning}`;
 
     // 5. 번아웃 자가 진단 평가
@@ -282,20 +301,24 @@ export async function POST(request) {
       burnoutAdvice = '자신도 모르게 피로가 누적되고 있습니다. 예정에 없던 회의나 갑작스러운 추가 업무는 차분히 우선순위를 나누어 처리하세요.';
     }
 
+    // 위트 있는 자동 닉네임 생성
+    const witNickname = generateWitNickname(mbti, profile.zodiac, profile.role);
+
     // 6. 익명 데이터베이스에 저장 (마인드미러 참여자 등록)
     const participantId = 'usr-' + Math.random().toString(36).substr(2, 9);
     const savedRecord = db.addParticipant({
       id: participantId,
-      name: profile.name || `${profile.zodiac}띠 생존자`,
+      name: witNickname,
       role: profile.role,
       age: profile.age,
       gender: profile.gender,
       zodiac: profile.zodiac,
       mood: profile.mood,
       mbti: mbti,
+      tarotId: profile.tarotId || null // 타로 카드 ID 저장
     });
 
-    // 7. 호스트 ID가 넘어왔을 경우 관계도 매핑 처리
+    // 7. 호스트 ID가 넘어왔을 경우 관계도 매핑 처리 (양방향 연결)
     let relationRecord = null;
     let hostName = '';
     if (hostId) {
@@ -307,6 +330,7 @@ export async function POST(request) {
         
         relationRecord = db.addRelation({
           hostId: hostId,
+          guestId: savedRecord.id, // 게스트 ID 명시적 기록
           guestName: savedRecord.name,
           guestBirth: profile.birthDate || '',
           guestZodiac: savedRecord.zodiac,
@@ -340,6 +364,8 @@ export async function POST(request) {
         showBenefit: showBenefitLink
       },
       scores: scores, // UI 그래프 작성을 위해 세부 점수 반환
+      tarotId: profile.tarotId || null,
+      name: witNickname, // 클라이언트가 리프레시할 닉네임 반환
       relation: relationRecord ? {
         hostName: hostName,
         influenceType: relationRecord.influenceType,

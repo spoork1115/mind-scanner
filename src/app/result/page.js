@@ -6,8 +6,60 @@ import Mascot from '@/components/Mascot';
 import { 
   Share2, Link2, RotateCcw, Heart, AlertTriangle, 
   Coffee, Sparkles, Award, User, HelpCircle, 
-  ChevronDown, ChevronUp, Network, Check
+  ChevronDown, ChevronUp, Network, Check, ShoppingBag, Eye
 } from 'lucide-react';
+
+// 타로 카드 정보 사전
+const TAROT_CARDS_DATA = {
+  fool: {
+    name: 'The Fool (바보 카드) 🃏',
+    desc: '새로운 도전과 자유로운 모험의 상징',
+    advice: '오늘 직장에서 무모해 보이는 도전이나 갑작스러운 기획 변경이 생기더라도 두려워하지 마세요! 예측 불허의 상황이 당신에게 가장 유리하고 긍정적인 반전 기회를 가져다줍니다. 엉뚱한 발상이 대박의 시작이 될 수 있으니 생각을 적극적으로 피력해 보세요.'
+  },
+  magician: {
+    name: 'The Magician (마법사 카드) 🧙',
+    desc: '무한한 창의성과 탁월한 재능의 상징',
+    advice: '준비된 지식과 기획력이 최고조로 빛나는 날입니다. 오늘 열리는 회의나 PT, 슬랙 소통에서 당신의 의견은 강한 설득력을 발휘하여 동료들을 끌어당길 것입니다. 당신의 능력을 마음껏 연출하고 자랑해도 좋은 타이밍입니다.'
+  },
+  empress: {
+    name: 'The Empress (여황제 카드) 👑',
+    desc: '풍요와 만족, 따뜻한 포용력의 상징',
+    advice: '팀원들과의 협업이 더없이 매끄럽고 풍요로운 결실을 맺는 하루입니다. 오늘은 탕비실에 소소한 간식을 채우거나, 동료에게 가벼운 칭찬 한마디를 건네보세요. 베푼 친절이 몇 배의 만족감과 보상으로 당신에게 돌아올 것입니다.'
+  },
+  hermit: {
+    name: 'The Hermit (은둔자 카드) 🕯️',
+    desc: '조용한 성찰과 깊이 있는 지혜의 상징',
+    advice: '사소한 사내 정치나 가벼운 잡담에서 한 걸음 물러나 침묵을 지키는 것이 이로운 날입니다. 오늘은 메신저 알림을 잠시 끄고 딥워크(Deep Work)에 몰두하여 엑셀이나 코드 오탈자 검토에 집중해 보세요. 조용한 성찰 속에서 완벽한 아이디어가 완성됩니다.'
+  }
+};
+
+// 복지몰 상품 매칭 사전
+const MALL_PRODUCTS = {
+  burnout_danger: [
+    { title: '15분 오피스 힐링 온열 안대', price: '9,900원', emoji: '👁️', link: 'https://gift.kakao.com' },
+    { title: '지압용 고체 스트레스 볼 (그립퍼)', price: '6,500원', emoji: '✊', link: 'https://gift.kakao.com' }
+  ],
+  burnout_warning: [
+    { title: '사무용 무선 저소음 키보드 & 마우스', price: '38,900원', emoji: '⌨️', link: 'https://gift.kakao.com' },
+    { title: '비타민 충전 상큼 레몬 사탕 박스', price: '12,000원', emoji: '🍋', link: 'https://gift.kakao.com' }
+  ],
+  T: [
+    { title: '초정밀 엑셀 단축키 가죽 데스크 매트', price: '19,800원', emoji: '📏', link: 'https://gift.kakao.com' },
+    { title: '고농축 카페인 다크 초콜릿 세트', price: '15,000원', emoji: '🍫', link: 'https://gift.kakao.com' }
+  ],
+  F: [
+    { title: '감성 반려 식물 미니 마리모 키우기', price: '11,500원', emoji: '🌿', link: 'https://gift.kakao.com' },
+    { title: '동료 교환용 칭찬 & 격려 스티커 팩', price: '4,500원', emoji: '💌', link: 'https://gift.kakao.com' }
+  ],
+  N: [
+    { title: '아이디어 스케치북 & 스마트 터치펜', price: '24,000원', emoji: '✏️', link: 'https://gift.kakao.com' },
+    { title: '회의실 무한 포스트잇 패드 세트', price: '8,900원', emoji: '📝', link: 'https://gift.kakao.com' }
+  ],
+  S: [
+    { title: '인체공학 메모리폼 기능성 자세 방석', price: '32,000원', emoji: '🪑', link: 'https://gift.kakao.com' },
+    { title: '오피스 시간 관리 전용 타임 타이머', price: '16,500원', emoji: '⏱️', link: 'https://gift.kakao.com' }
+  ]
+};
 
 function ResultContent() {
   const router = useRouter();
@@ -20,15 +72,14 @@ function ResultContent() {
   
   // 아코디언/탭 컨트롤 상태
   const [showTheory, setShowTheory] = useState(false);
-  const [selectedGuestRelation, setSelectedGuestRelation] = useState(null);
+  const [selectedRelation, setSelectedRelation] = useState(null);
 
-  // 호스트 본인 뷰 여부 판정
+  // 로컬 정보 기반 본인 페이지 확인
   const [isHostView, setIsHostView] = useState(false);
 
   useEffect(() => {
     if (!resultId) return;
 
-    // 1. 결과 데이터 로드
     const cachedResultStr = localStorage.getItem('office_universe_last_result');
     const cachedId = localStorage.getItem('office_universe_last_result_id');
     
@@ -36,14 +87,14 @@ function ResultContent() {
       setResultData(JSON.parse(cachedResultStr));
       setIsHostView(true);
     } else {
-      // 타인의 고유 ID를 열었거나, 방금 게스트가 테스트를 끝낸 후 캐싱되지 않은 경우
-      // 데모의 편의성과 API 연동을 위해 임시 저장소 데이터를 백엔드 또는 로컬 스토리지 데이터로 확보
+      // 타인 고유 ID 뷰 (또는 게스트가 테스트 마친 직후)
       if (cachedResultStr) {
         setResultData(JSON.parse(cachedResultStr));
       } else {
-        // 백업용 Mock 데이터 (ID 기반으로 불러올 백엔드가 없으므로, 시연용으로 로컬 데이터가 없을 때 안전장치)
+        // 백업용 템플릿
         const mockResult = {
           participantId: resultId,
+          name: '아이디어 부스터 토끼대리',
           mbti: 'ENFP',
           title: '아이디어 넘치는 부스터',
           mascot: 'energetic',
@@ -58,7 +109,8 @@ function ResultContent() {
             title: '양호 (충전 중)',
             advice: '업무 강도가 적절하며, 스트레스 관리가 잘 되고 있습니다. 현재 페이스를 유지하세요!'
           },
-          scores: { E: 3, I: 0, N: 2, S: 1, T: 1, F: 2, P: 2, J: 1 }
+          scores: { E: 3, I: 0, N: 2, S: 1, T: 1, F: 2, P: 2, J: 1 },
+          tarotId: 'magician'
         };
         setResultData(mockResult);
       }
@@ -66,13 +118,13 @@ function ResultContent() {
     }
   }, [resultId]);
 
-  // 관계 데이터 조회 (호스트 뷰인 경우에만)
+  // 관계 데이터 조회 (양방향 조회 지원 - host이든 guest이든 나 자신을 기준으로 엮인 모든 관계 긁어옴)
   useEffect(() => {
-    if (!resultId || !isHostView) return;
+    if (!resultId) return;
 
     const fetchRelations = async () => {
       try {
-        const response = await fetch(`/api/relations?hostId=${resultId}`);
+        const response = await fetch(`/api/relations?userId=${resultId}`);
         const data = await response.json();
         if (data.success) {
           setRelations(data.relations);
@@ -83,11 +135,10 @@ function ResultContent() {
     };
 
     fetchRelations();
-  }, [resultId, isHostView]);
+  }, [resultId]);
 
-  // URL 클립보드 복사 (게스트 초대용 링크)
+  // 초대 링크 클립보드 복사
   const handleCopyLink = () => {
-    // 프로필 입력으로 보내되, 현재 호스트 ID를 붙여서 공유
     const shareUrl = `${window.location.origin}/profile?hostId=${resultId}`;
     navigator.clipboard.writeText(shareUrl).then(() => {
       setCopied(true);
@@ -110,7 +161,7 @@ function ResultContent() {
     );
   }
 
-  // 성격 지표 비율 바 계산 (문항 당 3개 기준)
+  // 성격 지표 비율 바 계산
   const getDimensionPercent = (dim1, dim2) => {
     const scores = resultData.scores || { E: 2, I: 1, N: 2, S: 1, T: 1, F: 2, P: 2, J: 1 };
     const val1 = scores[dim1] || 0;
@@ -126,10 +177,149 @@ function ResultContent() {
     { leftKey: 'P', leftLabel: '인식형 (P)', rightKey: 'J', rightLabel: '판단형 (J)', desc: '업무 실행 및 계획성' },
   ];
 
+  // 타로 카드 정보 매핑
+  const tarotInfo = TAROT_CARDS_DATA[resultData.tarotId] || TAROT_CARDS_DATA.fool;
+
+  // 복지몰 상품 추천 목록 구성
+  const getRecommendedProducts = () => {
+    let products = [];
+    if (resultData.burnout?.state === 'danger') {
+      products = products.concat(MALL_PRODUCTS.burnout_danger);
+    } else if (resultData.burnout?.state === 'warning') {
+      products = products.concat(MALL_PRODUCTS.burnout_warning);
+    }
+
+    const mbti = resultData.mbti || 'ENFP';
+    // 엠비티아이 유형별로 대표적인 특성 결합
+    if (mbti.includes('T')) {
+      products.push(MALL_PRODUCTS.T[0]);
+    } else {
+      products.push(MALL_PRODUCTS.F[0]);
+    }
+
+    if (mbti.includes('N')) {
+      products.push(MALL_PRODUCTS.N[0]);
+    } else {
+      products.push(MALL_PRODUCTS.S[0]);
+    }
+
+    // 최대 3개 리턴
+    return products.slice(0, 3);
+  };
+
+  const recommendedProducts = getRecommendedProducts();
+
+  // 관계별 연결선 SVG 패스 및 스타일을 획득하는 함수
+  // cx, cy: 연결할 노드 좌표. rx, ry: 중심 노드 좌표(130, 130)
+  const getRelationSvgPath = (type, cx, cy, rx = 130, ry = 130) => {
+    if (type === 'villain') {
+      // 피해야 할 빌런: 지그재그 번개 모양
+      const steps = 6;
+      let pathD = `M ${rx},${ry}`;
+      for (let i = 1; i <= steps; i++) {
+        const t = i / steps;
+        const currX = rx + (cx - rx) * t;
+        const currY = ry + (cy - ry) * t;
+        
+        if (i < steps) {
+          // 수직 벡터 계산하여 오프셋 꼬아줌
+          const dx = cx - rx;
+          const dy = cy - ry;
+          const len = Math.sqrt(dx*dx + dy*dy) || 1;
+          const perpX = (-dy / len) * (i % 2 === 0 ? 8 : -8);
+          const perpY = (dx / len) * (i % 2 === 0 ? 8 : -8);
+          pathD += ` L ${currX + perpX},${currY + perpY}`;
+        } else {
+          pathD += ` L ${cx},${cy}`;
+        }
+      }
+      return {
+        d: pathD,
+        stroke: '#e74c3c',
+        strokeWidth: 3,
+        strokeDasharray: 'none',
+        markerEnd: 'none'
+      };
+    } else if (type === 'booster') {
+      // 아이디어 부스터: 네온 그린 물결선
+      const dx = cx - rx;
+      const dy = cy - ry;
+      const len = Math.sqrt(dx*dx + dy*dy) || 1;
+      // 컨트롤포인트 2개를 활용해 삼차 베지에 곡선으로 물결 형태 모사
+      const midX = rx + dx * 0.5;
+      const midY = ry + dy * 0.5;
+      const perpX = (-dy / len) * 15;
+      const perpY = (dx / len) * 15;
+      
+      const cp1x = rx + dx * 0.25 + perpX;
+      const cp1y = ry + dy * 0.25 + perpY;
+      const cp2x = rx + dx * 0.75 - perpX;
+      const cp2y = ry + dy * 0.75 - perpY;
+      
+      return {
+        d: `M ${rx},${ry} C ${cp1x},${cp1y} ${cp2x},${cp2y} ${cx},${cy}`,
+        stroke: '#2ecc71',
+        strokeWidth: 3,
+        strokeDasharray: 'none',
+        markerEnd: 'url(#arrow-green)'
+      };
+    } else if (type === 'savior') {
+      // 오늘의 구원자: 부드러운 핑크색 점선 + 화살표
+      return {
+        d: `M ${rx},${ry} L ${cx},${cy}`,
+        stroke: '#ff6584',
+        strokeWidth: 2.5,
+        strokeDasharray: '4,4',
+        markerEnd: 'url(#arrow-pink)'
+      };
+    } else if (type === 'workmate') {
+      // 야근 동반자: 회색 굵은 긴 점선
+      return {
+        d: `M ${rx},${ry} L ${cx},${cy}`,
+        stroke: '#95a5a6',
+        strokeWidth: 4,
+        strokeDasharray: '8,4',
+        markerEnd: 'none'
+      };
+    } else if (type === 'charger') {
+      // 감정 충전기: 연두색 완만한 곡선 + 화살표
+      const dx = cx - rx;
+      const dy = cy - ry;
+      const len = Math.sqrt(dx*dx + dy*dy) || 1;
+      const midX = rx + dx * 0.5 + (-dy / len) * 10;
+      const midY = ry + dy * 0.5 + (dx / len) * 10;
+      return {
+        d: `M ${rx},${ry} Q ${midX},${midY} ${cx},${cy}`,
+        stroke: '#2ecc71',
+        strokeWidth: 2.5,
+        strokeDasharray: 'none',
+        markerEnd: 'url(#arrow-green)'
+      };
+    } else if (type === 'corrector') {
+      // 팩트 폭격기: 하늘색 일점쇄선
+      return {
+        d: `M ${rx},${ry} L ${cx},${cy}`,
+        stroke: '#3498db',
+        strokeWidth: 2.5,
+        strokeDasharray: '8,3,2,3',
+        markerEnd: 'url(#arrow-blue)'
+      };
+    }
+    
+    // 기본 디폴트 실선
+    return {
+      d: `M ${rx},${ry} L ${cx},${cy}`,
+      stroke: '#bdc3c7',
+      strokeWidth: 2,
+      strokeDasharray: 'none',
+      markerEnd: 'none'
+    };
+  };
+
   return (
     <div className="result-container fade-in">
       
-      {/* 1. 게스트 참여 후 1:1 궁합 리포트 최상단 표출 (게스트 전용 뷰) */}
+      {/* 1. 게스트 참여 후 1:1 궁합 리포트 최상단 표출 (게스트 1:1 전용 뷰) */}
       {!isHostView && resultData.relation && (
         <div className="section-card card guest-matching-card fade-in">
           <div className="match-title-row">
@@ -143,14 +333,26 @@ function ResultContent() {
               <div className="avatar-circle host-color">
                 👤
               </div>
-              <span className="user-name">{resultData.relation.hostName}님</span>
+              <span className="user-name">{resultData.relation.hostName}</span>
             </div>
             
             <div className="match-line-box">
               <span className="match-score">{resultData.relation.compatibilityScore}%</span>
               <div className="line-heart-bg">
                 <svg className="matching-svg" width="100" height="30">
-                  <path d="M 0,15 L 100,15" stroke="#ff6584" strokeWidth="3" strokeDasharray="5,5" />
+                  <defs>
+                    <marker id="arrow-match" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                      <path d="M0,0 L6,3 L0,6 Z" fill="#ff6584" />
+                    </marker>
+                  </defs>
+                  {/* 관계선 형태 분기 렌더링 (지그재그, 물결 등 1:1에서도 모사) */}
+                  {resultData.relation.influenceType === 'villain' ? (
+                    <path d="M 0,15 L 20,25 L 40,5 L 60,25 L 80,5 L 100,15" stroke="#e74c3c" strokeWidth="3" fill="none" />
+                  ) : resultData.relation.influenceType === 'booster' ? (
+                    <path d="M 0,15 Q 25,30 50,15 T 100,15" stroke="#2ecc71" strokeWidth="3" fill="none" markerEnd="url(#arrow-match)" />
+                  ) : (
+                    <path d="M 0,15 L 100,15" stroke="#ff6584" strokeWidth="2.5" strokeDasharray="5,5" fill="none" markerEnd="url(#arrow-match)" />
+                  )}
                 </svg>
               </div>
             </div>
@@ -178,15 +380,40 @@ function ResultContent() {
         </div>
       )}
 
-      {/* 2. 상단 마스크 캐릭터 영역 (기본 성격 분석) */}
+      {/* 2. 상단 마스크 캐릭터 영역 (나의 분석 결과) */}
       <div className="result-header">
         <span className="type-badge">{resultData.mbti} 유형</span>
-        <Mascot emotion={resultData.mascot} size={120} />
-        <h1 className="result-title">"{resultData.title}"</h1>
+        <Mascot emotion={resultData.mascot} size={110} />
+        <h1 className="result-title">"{resultData.name || resultData.title}"</h1>
         <p className="result-desc">{resultData.description}</p>
       </div>
 
-      {/* 3. 성격 지표 비율 그래프 (순수 CSS & HTML 프리미엄 시각화) */}
+      {/* 3. 오늘 나를 이끌 타로 카드 결과 노출 (NEW) */}
+      {resultData.tarotId && (
+        <div className="section-card card tarot-result-card fade-in">
+          <div className="card-header-row">
+            <Sparkles size={18} className="icon-gold" />
+            <h3>오늘 나의 운명 타로 카드</h3>
+          </div>
+          <div className="tarot-result-body">
+            <div className="tarot-result-card-visual">
+              <div className="tarot-result-emoji">
+                {resultData.tarotId === 'fool' && '🃏'}
+                {resultData.tarotId === 'magician' && '🧙'}
+                {resultData.tarotId === 'empress' && '👑'}
+                {resultData.tarotId === 'hermit' && '🕯️'}
+              </div>
+              <span className="tarot-result-card-name">{tarotInfo.name}</span>
+            </div>
+            <div className="tarot-result-text-box">
+              <h4 className="tarot-result-sub">{tarotInfo.desc}</h4>
+              <p className="tarot-result-advice">{tarotInfo.advice}</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 4. 성격 지표 비율 그래프 */}
       <div className="section-card card">
         <div className="card-header-row">
           <Network size={20} className="icon-orange" />
@@ -217,7 +444,7 @@ function ResultContent() {
         </div>
       </div>
 
-      {/* 4. 오늘의 직장인 운세 */}
+      {/* 5. 오늘의 직장 내 역할과 운세 */}
       <div className="section-card card">
         <div className="card-header-row">
           <Sparkles size={20} className="icon-orange" />
@@ -226,7 +453,7 @@ function ResultContent() {
         <p className="content-text">{resultData.fortune}</p>
       </div>
 
-      {/* 5. 신뢰성을 위한 분석 이론 및 논문 근거 (Accordion 구조) */}
+      {/* 6. 신뢰성을 위한 분석 이론 및 논문 근거 */}
       <div className="section-card card theory-accordion-card">
         <button 
           className="accordion-trigger-btn"
@@ -266,7 +493,7 @@ function ResultContent() {
         )}
       </div>
 
-      {/* 6. 조심할 일 */}
+      {/* 7. 조심할 일 */}
       <div className="section-card card warning-card">
         <div className="card-header-row">
           <AlertTriangle size={20} className="icon-red" />
@@ -275,116 +502,187 @@ function ResultContent() {
         <p className="content-text warning-text">{resultData.warning}</p>
       </div>
 
-      {/* 7. 호스트 뷰 전용: 인적 관계도 그래프 (SVG & CSS 프리미엄 맵) */}
-      {isHostView && (
-        <div className="section-card card relations-map-card">
-          <div className="card-header-row">
-            <Network size={20} className="icon-purple" />
-            <h3>마인드미러 관계망 (Relation Map)</h3>
-          </div>
-          
-          {relations.length > 0 ? (
-            <div className="map-view-wrapper">
-              <p className="map-guide">나와 매칭된 동료들을 터치해 오늘의 영향력을 확인하세요!</p>
-              
-              <div className="network-container">
-                {/* 중앙 호스트 */}
-                <div className="center-node host-node">
-                  <div className="node-avatar">👤</div>
-                  <span className="node-name">나</span>
-                </div>
+      {/* 8. 양방향 관계도 그래프 시각화 (SVG & CSS 연결선 다각화 탑재) */}
+      <div className="section-card card relations-map-card">
+        <div className="card-header-row">
+          <Network size={20} className="icon-purple" />
+          <h3>마인드미러 관계망 (Relation Map)</h3>
+        </div>
+        
+        {relations.length > 0 ? (
+          <div className="map-view-wrapper">
+            <p className="map-guide">나와 매칭된 동료들을 터치해 관계도 분석과 다른 스타일의 연결선을 확인해 보세요!</p>
+            
+            <div className="network-container">
+              {/* 관계선들을 렌더링하는 통합 SVG 캔버스 */}
+              <svg className="network-svg-canvas" width="260" height="260">
+                <defs>
+                  {/* 화살표 마커 모음 */}
+                  <marker id="arrow-pink" markerWidth="5" markerHeight="5" refX="22" refY="2.5" orient="auto">
+                    <path d="M0,0 L5,2.5 L0,5 Z" fill="#ff6584" />
+                  </marker>
+                  <marker id="arrow-green" markerWidth="5" markerHeight="5" refX="22" refY="2.5" orient="auto">
+                    <path d="M0,0 L5,2.5 L0,5 Z" fill="#2ecc71" />
+                  </marker>
+                  <marker id="arrow-blue" markerWidth="5" markerHeight="5" refX="22" refY="2.5" orient="auto">
+                    <path d="M0,0 L5,2.5 L0,5 Z" fill="#3498db" />
+                  </marker>
+                </defs>
 
-                {/* 주변 게스트들을 원형으로 배치 */}
+                {/* 각 노드를 잇는 연결선들을 계산하여 드로잉 */}
                 {relations.map((rel, idx) => {
                   const angle = (idx * 360) / relations.length;
-                  const radius = 95; // 배치 반경 (px)
+                  const radius = 95;
                   const rad = (angle * Math.PI) / 180;
-                  const x = Math.round(Math.cos(rad) * radius);
-                  const y = Math.round(Math.sin(rad) * radius);
+                  // 노드의 중심 좌표 계산
+                  const cx = 130 + radius * Math.cos(rad);
+                  const cy = 130 + radius * Math.sin(rad);
+
+                  // 관계선 스타일 및 패스 계산
+                  const lineStyle = getRelationSvgPath(rel.influenceType, cx, cy);
 
                   return (
-                    <div key={rel.id} className="guest-node-wrapper" style={{ transform: `translate(${x}px, ${y}px)` }}>
-                      {/* 선 긋기 */}
-                      <div 
-                        className="connecting-line" 
-                        style={{
-                          width: `${radius}px`,
-                          transform: `rotate(${angle + 180}deg)`,
-                          transformOrigin: '0% 50%'
-                        }}
-                      />
-                      
-                      <button 
-                        className={`guest-node-btn ${selectedGuestRelation?.id === rel.id ? 'active' : ''}`}
-                        onClick={() => setSelectedGuestRelation(rel)}
-                      >
-                        <span className="guest-node-zodiac">{rel.guestZodiac}</span>
-                        <span className="guest-node-name">{rel.guestName}</span>
-                      </button>
-                    </div>
+                    <path
+                      key={`line-${rel.id}`}
+                      d={lineStyle.d}
+                      stroke={lineStyle.stroke}
+                      strokeWidth={lineStyle.strokeWidth}
+                      strokeDasharray={lineStyle.strokeDasharray}
+                      fill="none"
+                      markerEnd={lineStyle.markerEnd}
+                    />
                   );
                 })}
+              </svg>
+
+              {/* 중앙 노드 (나) */}
+              <div className="center-node host-node">
+                <div className="node-avatar">👤</div>
+                <span className="node-name">나</span>
               </div>
 
-              {/* 선택한 동료와의 관계 상세 내용 */}
-              {selectedGuestRelation ? (
-                <div className="selected-relation-detail-box fade-in">
-                  <div className="detail-header">
-                    <h4>{selectedGuestRelation.guestName}님과의 궁합</h4>
-                    <span className="compat-score-badge">{selectedGuestRelation.compatibilityScore}%</span>
-                  </div>
-                  <p className="detail-role">
-                    💼 {selectedGuestRelation.guestRole} ({selectedGuestRelation.guestZodiac}띠)
-                  </p>
-                  <div className="detail-influence">
-                    <strong>{selectedGuestRelation.influenceTitle}</strong>
-                    <p className="influence-desc-detail">{selectedGuestRelation.influenceDesc}</p>
-                  </div>
-                  <button className="close-detail-btn" onClick={() => setSelectedGuestRelation(null)}>닫기</button>
-                </div>
-              ) : (
-                <div className="relation-placeholder-box">
-                  <p>동료 아바타를 탭하면 관계도 분석 리포트가 표시됩니다.</p>
-                </div>
-              )}
-            </div>
-          ) : (
-            <div className="empty-relations-view">
-              <p>아직 마인드미러에 응답한 동료가 없습니다.</p>
-              <p className="sub-text">아래 링크를 복사하여 팀원들에게 공유하고,<br />서로 어떤 영향을 끼치는지 관계망을 채워보세요!</p>
-              <div className="arrow-down-glow">👇</div>
-            </div>
-          )}
-        </div>
-      )}
+              {/* 주변 연결자 노드 배치 */}
+              {relations.map((rel, idx) => {
+                const angle = (idx * 360) / relations.length;
+                const radius = 95; 
+                const rad = (angle * Math.PI) / 180;
+                const x = Math.round(Math.cos(rad) * radius);
+                const y = Math.round(Math.sin(rad) * radius);
 
-      {/* 8. 호스트 뷰 전용: 나에게 응답한 동료 리스트 */}
-      {isHostView && relations.length > 0 && (
+                // 양방향 노드 판별: 내가 게스트인지 호스트인지에 따라 대상 이름 표기
+                const targetName = rel.hostId === resultId ? rel.guestName : rel.hostName || '동료';
+                const targetRole = rel.hostId === resultId ? rel.guestRole : '호스트';
+                const targetZodiac = rel.hostId === resultId ? rel.guestZodiac : '✨';
+
+                return (
+                  <div key={`node-${rel.id}`} className="guest-node-wrapper" style={{ transform: `translate(${x}px, ${y}px)` }}>
+                    <button 
+                      className={`guest-node-btn ${selectedRelation?.id === rel.id ? 'active' : ''} ${rel.hostId !== resultId ? 'host-partner' : ''}`}
+                      onClick={() => setSelectedRelation(rel)}
+                    >
+                      <span className="guest-node-zodiac">{targetZodiac}</span>
+                      <span className="guest-node-name">{targetName}</span>
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* 선택한 동료와의 관계 상세 내용 */}
+            {selectedRelation ? (
+              <div className="selected-relation-detail-box fade-in">
+                <div className="detail-header">
+                  <h4>{selectedRelation.hostId === resultId ? selectedRelation.guestName : selectedRelation.hostName || '호스트'}님과의 관계</h4>
+                  <span className="compat-score-badge">{selectedRelation.compatibilityScore}%</span>
+                </div>
+                <p className="detail-role">
+                  💼 {selectedRelation.hostId === resultId ? `${selectedRelation.guestRole} (${selectedRelation.guestZodiac}띠)` : '초대해준 호스트'}
+                </p>
+                <div className="detail-influence">
+                  <strong>{selectedRelation.influenceTitle}</strong>
+                  <p className="influence-desc-detail">{selectedRelation.influenceDesc}</p>
+                </div>
+                <button className="close-detail-btn" onClick={() => setSelectedRelation(null)}>닫기</button>
+              </div>
+            ) : (
+              <div className="relation-placeholder-box">
+                <p>연결선 모양과 동료 노드를 탭하면 분석 리포트가 표시됩니다.</p>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="empty-relations-view">
+            <p>아직 마인드미러에 응답한 동료가 없습니다.</p>
+            <p className="sub-text">아래 링크를 복사하여 팀원들에게 공유하고,<br />지그재그 번개선, 물결선 등 다양한 연결선을 완성해 보세요!</p>
+            <div className="arrow-down-glow">👇</div>
+          </div>
+        )}
+      </div>
+
+      {/* 9. 나에게 응답한 동료 리스트 */}
+      {relations.length > 0 && (
         <div className="section-card card">
           <div className="card-header-row">
             <User size={18} className="icon-orange" />
-            <h3>나에게 응답한 동료들 ({relations.length}명)</h3>
+            <h3>나와 엮인 동료 리스트 ({relations.length}명)</h3>
           </div>
           <div className="guest-list">
-            {relations.map((rel) => (
-              <div key={rel.id} className="guest-list-item card" onClick={() => setSelectedGuestRelation(rel)}>
-                <div className="item-left">
-                  <span className="zodiac-emoji-box">🎨</span>
-                  <div>
-                    <h4 className="guest-item-name">{rel.guestName} <span className="guest-item-role">{rel.guestRole}</span></h4>
-                    <p className="guest-item-influence">{rel.influenceTitle}</p>
+            {relations.map((rel) => {
+              const targetName = rel.hostId === resultId ? rel.guestName : rel.hostName || '호스트';
+              const targetRole = rel.hostId === resultId ? rel.guestRole : '초대한 호스트';
+              return (
+                <div key={`list-${rel.id}`} className="guest-list-item card" onClick={() => setSelectedRelation(rel)}>
+                  <div className="item-left">
+                    <span className="zodiac-emoji-box">
+                      {rel.influenceType === 'savior' && '👼'}
+                      {rel.influenceType === 'villain' && '☠️'}
+                      {rel.influenceType === 'workmate' && '☕'}
+                      {rel.influenceType === 'booster' && '🚀'}
+                      {rel.influenceType === 'charger' && '🔋'}
+                      {rel.influenceType === 'corrector' && '🎯'}
+                    </span>
+                    <div>
+                      <h4 className="guest-item-name">{targetName} <span className="guest-item-role">{targetRole}</span></h4>
+                      <p className="guest-item-influence">{rel.influenceTitle}</p>
+                    </div>
+                  </div>
+                  <div className="item-right">
+                    <span className="item-score">{rel.compatibilityScore}점</span>
                   </div>
                 </div>
-                <div className="item-right">
-                  <span className="item-score">{rel.compatibilityScore}점</span>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       )}
 
-      {/* 9. 공유 및 바이럴 링크 생성 영역 (하단 썸존) */}
+      {/* 10. 오피스 복지몰 맞춤 상품 추천 섹션 (NEW) */}
+      <div className="section-card card shopping-welfare-card">
+        <div className="card-header-row">
+          <ShoppingBag size={18} className="icon-orange" />
+          <h3>오피스 복지몰 추천 상품</h3>
+        </div>
+        <p className="welfare-desc">나의 유형 및 멘탈 상태에 부합하는 사내 맞춤 특가 복지 상품입니다.</p>
+        
+        <div className="product-grid">
+          {recommendedProducts.map((prod, idx) => (
+            <a 
+              key={idx} 
+              href={prod.link} 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="product-card card"
+            >
+              <div className="product-emoji">{prod.emoji}</div>
+              <h4 className="product-title">{prod.title}</h4>
+              <span className="product-price">{prod.price}</span>
+              <span className="welfare-buy-btn">선물하기 🎁</span>
+            </a>
+          ))}
+        </div>
+      </div>
+
+      {/* 11. 공유 및 바이럴 링크 생성 영역 */}
       <div className="action-buttons-grid">
         {isHostView ? (
           <>
@@ -416,6 +714,7 @@ function ResultContent() {
           flex-direction: column;
           height: auto;
           padding-bottom: 40px;
+          font-family: 'Gowun Batang', serif;
         }
         .loading-fallback {
           display: flex;
@@ -442,7 +741,7 @@ function ResultContent() {
           box-shadow: 0 2px 6px rgba(255, 111, 60, 0.1);
         }
         .result-title {
-          font-size: 26px;
+          font-size: 24px;
           margin-top: 12px;
           font-weight: 800;
           color: hsl(var(--text-dark));
@@ -489,6 +788,9 @@ function ResultContent() {
         .icon-pink {
           color: #ff6584;
         }
+        .icon-gold {
+          color: #f1c40f;
+        }
         .warning-card {
           background-color: hsl(355, 100%, 97%);
           border: 1px solid rgba(255, 111, 60, 0.1);
@@ -496,6 +798,55 @@ function ResultContent() {
         .warning-text {
           color: hsl(355, 60%, 40%);
           font-weight: 500;
+        }
+
+        /* 타로 결과 카드 스타일 */
+        .tarot-result-card {
+          border-left: 5px solid #f1c40f;
+          background-color: hsl(45, 100%, 98%);
+        }
+        .tarot-result-body {
+          display: flex;
+          gap: 16px;
+          align-items: center;
+          margin-top: 8px;
+        }
+        .tarot-result-card-visual {
+          width: 70px;
+          height: 110px;
+          border-radius: 8px;
+          border: 2px solid #f1c40f;
+          background-color: #fff;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          box-shadow: var(--shadow-sm);
+          flex-shrink: 0;
+        }
+        .tarot-result-emoji {
+          font-size: 32px;
+        }
+        .tarot-result-card-name {
+          font-size: 8px;
+          font-weight: 800;
+          color: #b79500;
+          margin-top: 4px;
+          text-align: center;
+        }
+        .tarot-result-text-box {
+          flex: 1;
+        }
+        .tarot-result-sub {
+          font-size: 14px;
+          font-weight: 700;
+          color: hsl(var(--text-dark));
+          margin-bottom: 6px;
+        }
+        .tarot-result-advice {
+          font-size: 12.5px;
+          line-height: 1.5;
+          color: hsl(var(--text-muted));
         }
 
         /* 게스트 매칭 카드 스타일 */
@@ -736,9 +1087,12 @@ function ResultContent() {
           padding: 10px 0;
         }
         .map-guide {
-          font-size: 12.5px;
+          font-size: 12px;
           color: hsl(var(--text-muted));
           margin-bottom: 24px;
+          text-align: center;
+          padding: 0 10px;
+          line-height: 1.4;
         }
         .network-container {
           position: relative;
@@ -748,6 +1102,15 @@ function ResultContent() {
           align-items: center;
           justify-content: center;
           margin-bottom: 20px;
+        }
+        .network-svg-canvas {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          z-index: 2;
+          pointer-events: none;
         }
         .center-node {
           position: absolute;
@@ -778,16 +1141,9 @@ function ResultContent() {
           display: flex;
           align-items: center;
           justify-content: center;
-        }
-        .connecting-line {
-          position: absolute;
-          height: 2px;
-          background-color: rgba(142, 68, 173, 0.25);
-          z-index: 1;
+          z-index: 5;
         }
         .guest-node-btn {
-          position: relative;
-          z-index: 5;
           width: 48px;
           height: 48px;
           border-radius: 50%;
@@ -806,6 +1162,10 @@ function ResultContent() {
           transform: scale(1.1);
           border-color: #ff6584;
           box-shadow: 0 4px 8px rgba(255, 101, 132, 0.3);
+        }
+        /* 내가 초대한 상대가 아닌 경우(나를 초대한 호스트 파트너 노드)는 노드 컬러 차별화 */
+        .guest-node-btn.host-partner {
+          border-color: #3498db;
         }
         .guest-node-zodiac {
           font-size: 14px;
@@ -984,6 +1344,70 @@ function ResultContent() {
           font-size: 14.5px;
           font-weight: 800;
           color: #ff6584;
+        }
+
+        /* 복지몰 추천 상품 카드 스타일 */
+        .shopping-welfare-card {
+          border-left: 5px solid #2ecc71;
+        }
+        .welfare-desc {
+          font-size: 12.5px;
+          color: hsl(var(--text-muted));
+          margin-bottom: 16px;
+        }
+        .product-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 8px;
+        }
+        .product-card {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+          padding: 12px 6px;
+          background-color: #fff;
+          cursor: pointer;
+          text-decoration: none;
+          transition: transform 0.2s;
+          margin-bottom: 0;
+          min-height: 160px;
+          justify-content: space-between;
+        }
+        .product-card:hover {
+          transform: translateY(-3px);
+          border-color: #2ecc71;
+        }
+        .product-emoji {
+          font-size: 28px;
+          margin-bottom: 4px;
+        }
+        .product-title {
+          font-size: 11px;
+          font-weight: 700;
+          color: hsl(var(--text-dark));
+          line-height: 1.3;
+          margin-bottom: 4px;
+          height: 32px;
+          overflow: hidden;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+        }
+        .product-price {
+          font-size: 11px;
+          font-weight: 800;
+          color: #e74c3c;
+          font-family: 'Outfit', sans-serif;
+        }
+        .welfare-buy-btn {
+          font-size: 9px;
+          font-weight: 800;
+          background-color: hsl(150, 60%, 95%);
+          color: #2ecc71;
+          padding: 3px 6px;
+          border-radius: 4px;
+          margin-top: 6px;
         }
 
         /* 하단 그리드 액션 버튼 */

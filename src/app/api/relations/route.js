@@ -6,13 +6,13 @@ import { db } from '@/lib/db';
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
-    const hostId = searchParams.get('hostId');
+    const userId = searchParams.get('userId');
 
-    if (!hostId) {
-      return NextResponse.json({ error: 'hostId 파라미터가 필요합니다.' }, { status: 400 });
+    if (!userId) {
+      return NextResponse.json({ error: 'userId 파라미터가 필요합니다.' }, { status: 400 });
     }
 
-    const relations = db.getRelationsByHost(hostId);
+    const relations = db.getRelationsByUser(userId);
     return NextResponse.json({
       success: true,
       relations
