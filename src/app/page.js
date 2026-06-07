@@ -21,16 +21,16 @@ export default function OnboardingPage() {
     return () => clearTimeout(timer);
   }, []);
 
-  const handleStartMode = (mode) => {
+  const handleStart = () => {
     if (!agreePrivacy) {
       alert('서비스 이용을 위해 필수 개인정보 처리방침에 동의해주세요.');
       return;
     }
     
-    // 로컬 스토리지에 동의 정보 및 선택한 모드 저장
+    // 로컬 스토리지에 동의 정보 저장 (설문 모드 고정)
     localStorage.setItem('office_universe_privacy_agreed', 'true');
     localStorage.setItem('office_universe_push_agreed', agreePush ? 'true' : 'false');
-    localStorage.setItem('office_universe_mode', mode); // 'tarot' or 'test'
+    localStorage.setItem('office_universe_mode', 'test');
     
     // 프로필 입력 페이지로 이동
     router.push('/profile');
@@ -107,7 +107,7 @@ export default function OnboardingPage() {
             </div>
             <div className="terms-detail">
               - <strong>수집목적</strong>: 직무 유형 성향 분석 및 동료 케미 매칭 관계도 제공<br />
-              - <strong>수집항목</strong>: 생년월일, 직책, 오늘의 기분, 선택한 타로 카드<br />
+              - <strong>수집항목</strong>: 생년월일, 직책, 오늘의 기분, 설문 응답 결과<br />
               - <strong>보유기간</strong>: <strong>수집 당일 자정(24:00) 즉시 영구 파기</strong> (식별 정보와 무관하게 익명 UUID로 안전히 임시 관리됩니다)
             </div>
           </div>
@@ -133,30 +133,23 @@ export default function OnboardingPage() {
         </label>
       </div>
 
-      {/* 두 가지 검사 방식 선택 카드 버튼 (Thumb Zone 배치) */}
-      <div className="mode-selection-zone">
-        <p className="mode-guide-title">원하는 거울 방식을 선택해 주세요</p>
-        <div className="mode-btn-grid">
-          <button 
-            className={`mode-select-card card tarot-mode ${!agreePrivacy ? 'disabled' : ''}`}
-            onClick={() => handleStartMode('tarot')}
-            disabled={!agreePrivacy}
-          >
-            <span className="mode-emoji">🔮</span>
-            <span className="mode-title">운명 타로 거울</span>
-            <span className="mode-desc">고민에 집중해 타로를 뽑아 보는 오늘 하루의 처방전</span>
-          </button>
-
-          <button 
-            className={`mode-select-card card test-mode ${!agreePrivacy ? 'disabled' : ''}`}
-            onClick={() => handleStartMode('test')}
-            disabled={!agreePrivacy}
-          >
-            <span className="mode-emoji">📝</span>
-            <span className="mode-title">직무 성향 거울</span>
-            <span className="mode-desc">12문항 질문 응답을 통해 나와 동료의 성격 맞춤 분석</span>
-          </button>
+      {/* 단일 시작 버튼 */}
+      <div className="start-zone">
+        <div className="start-intro-box">
+          <span className="start-emoji">📝</span>
+          <div className="start-intro-text">
+            <p className="start-intro-title">직무 성향 거울</p>
+            <p className="start-intro-desc">12문항 응답으로 나의 성격 유형을 분석하고<br />동료들과의 관계망을 시각화해 보세요!</p>
+          </div>
         </div>
+        <button
+          className={`btn btn-primary start-btn ${!agreePrivacy ? 'disabled' : ''}`}
+          onClick={handleStart}
+          disabled={!agreePrivacy}
+        >
+          마인드미러 시작하기
+          <ChevronRight size={20} style={{ marginLeft: '4px' }} />
+        </button>
       </div>
 
       <style jsx>{`
@@ -255,69 +248,49 @@ export default function OnboardingPage() {
           line-height: 1.45;
         }
         
-        /* 거울 방식 선택 영역 */
-        .mode-selection-zone {
-          margin-top: 24px;
-        }
-        .mode-guide-title {
-          font-size: 14px;
-          font-weight: 800;
-          color: hsl(var(--text-dark));
-          text-align: center;
-          margin-bottom: 10px;
-        }
-        .mode-btn-grid {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 12px;
-        }
-        .mode-select-card {
+        /* 시작 버튼 영역 */
+        .start-zone {
+          margin-top: 16px;
           display: flex;
           flex-direction: column;
+          gap: 14px;
+        }
+        .start-intro-box {
+          display: flex;
           align-items: center;
-          text-align: center;
-          padding: 16px 8px;
-          cursor: pointer;
-          transition: transform 0.2s, box-shadow 0.2s;
-          margin-bottom: 0;
-          background-color: #fff;
-          border: 2px solid transparent;
+          gap: 14px;
+          background-color: hsl(var(--primary-light));
+          border: 1.5px solid rgba(255, 111, 60, 0.2);
+          border-radius: var(--radius-md);
+          padding: 16px;
         }
-        .mode-select-card:hover {
-          transform: translateY(-3px);
-          box-shadow: var(--shadow-md);
+        .start-emoji {
+          font-size: 36px;
+          flex-shrink: 0;
         }
-        .mode-select-card.tarot-mode:hover {
-          border-color: #f1c40f;
-        }
-        .mode-select-card.test-mode:hover {
-          border-color: hsl(var(--primary));
-        }
-        .mode-select-card.disabled {
-          opacity: 0.6;
-          cursor: not-allowed;
-        }
-        .mode-select-card.disabled:hover {
-          transform: none;
-          box-shadow: var(--shadow-sm);
-          border-color: transparent;
-        }
-        .mode-emoji {
-          font-size: 32px;
-          margin-bottom: 6px;
-        }
-        .mode-title {
-          font-size: 14.5px;
+        .start-intro-title {
+          font-size: 16px;
           font-weight: 800;
           color: hsl(var(--text-dark));
           margin-bottom: 4px;
         }
-        .mode-desc {
-          font-size: 10.5px;
+        .start-intro-desc {
+          font-size: 12px;
           color: hsl(var(--text-muted));
-          line-height: 1.4;
-          height: 32px;
-          overflow: hidden;
+          line-height: 1.5;
+        }
+        .start-btn {
+          width: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          min-height: 54px;
+          font-size: 17px;
+          letter-spacing: -0.3px;
+        }
+        .start-btn.disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
         }
       `}</style>
     </div>

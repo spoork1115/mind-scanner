@@ -5,49 +5,10 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Mascot from '@/components/Mascot';
 import { 
   Share2, Link2, RotateCcw, Heart, AlertTriangle, 
-  Coffee, Sparkles, Award, User, HelpCircle, 
-  ChevronDown, ChevronUp, Network, Check, ShoppingBag, Eye
+  Coffee, Award, User, HelpCircle, 
+  ChevronDown, ChevronUp, Network, Check, ShoppingBag
 } from 'lucide-react';
 
-// 타로 카드 정보 사전
-const TAROT_CARDS_DATA = {
-  fool: {
-    name: 'The Fool (바보 카드) 🃏',
-    desc: '새로운 도전과 자유로운 모험의 상징',
-    img: 'https://upload.wikimedia.org/wikipedia/commons/9/90/RWS_Tarot_00_Fool.jpg',
-    advice: '오늘 직장에서 무모해 보이는 도전이나 갑작스러운 기획 변경이 생기더라도 두려워하지 마세요! 예측 불허의 상황이 당신에게 가장 유리하고 긍정적인 반전 기회를 가져다줍니다. 엉뚱한 발상이 대박의 시작이 될 수 있으니 생각을 적극적으로 피력해 보세요.'
-  },
-  magician: {
-    name: 'The Magician (마법사 카드) 🧙',
-    desc: '무한한 창의성과 탁월한 재능의 상징',
-    img: 'https://upload.wikimedia.org/wikipedia/commons/d/de/RWS_Tarot_01_Magician.jpg',
-    advice: '준비된 지식과 기획력이 최고조로 빛나는 날입니다. 오늘 열리는 회의나 PT, 슬랙 소통에서 당신의 의견은 강한 설득력을 발휘하여 동료들을 끌어당길 것입니다. 당신의 능력을 마음껏 연출하고 자랑해도 좋은 타이밍입니다.'
-  },
-  empress: {
-    name: 'The Empress (여황제 카드) 👑',
-    desc: '풍요와 만족, 따뜻한 포용력의 상징',
-    img: 'https://upload.wikimedia.org/wikipedia/commons/e/e5/RWS_Tarot_03_Empress.jpg',
-    advice: '팀원들과의 협업이 더없이 매끄럽고 풍요로운 결실을 맺는 하루입니다. 오늘은 탕비실에 소소한 간식을 채우거나, 동료에게 가벼운 칭찬 한마디를 건네보세요. 베푼 친절이 몇 배의 만족감과 보상으로 당신에게 돌아올 것입니다.'
-  },
-  hermit: {
-    name: 'The Hermit (은둔자 카드) 🕯️',
-    desc: '조용한 성찰과 깊이 있는 지혜의 상징',
-    img: 'https://upload.wikimedia.org/wikipedia/commons/4/4d/RWS_Tarot_09_Hermit.jpg',
-    advice: '사소한 사내 정치나 가벼운 잡담에서 한 걸음 물러나 침묵을 지키는 것이 이로운 날입니다. 오늘은 메신저 알림을 잠시 끄고 딥워크(Deep Work)에 몰두하여 엑셀이나 코드 오탈자 검토에 집중해 보세요. 조용한 성찰 속에서 완벽한 아이디어가 완성됩니다.'
-  },
-  chariot: {
-    name: 'The Chariot (전차 카드) 🛒',
-    desc: '강력한 추진력과 극복의 상징',
-    img: 'https://upload.wikimedia.org/wikipedia/commons/9/9b/RWS_Tarot_07_Chariot.jpg',
-    advice: '오늘 직장에서 어려운 태스크나 막히던 결재 라인이 있나요? 주저하지 말고 강력하게 추진해 보세요. 돌파력이 최고조에 달한 상태이므로, 당당한 태도로 상대방을 설득하면 결국 당신의 의도대로 업무를 주도하게 될 것입니다.'
-  },
-  wheel: {
-    name: 'Wheel of Fortune (수레바퀴 카드) 🎡',
-    desc: '변화와 기회, 순환의 상징',
-    img: 'https://upload.wikimedia.org/wikipedia/commons/3/3c/RWS_Tarot_10_Wheel_of_Fortune.jpg',
-    advice: '갑작스러운 업무 조정, 팀 재배치, 스케줄 변동이 생기더라도 전혀 걱정하지 마세요. 이는 운명이 가져다준 긍정적인 터닝 포인트입니다. 파도에 몸을 싣듯 자연스럽게 흐름을 타고 대세에 맞추면 오히려 좋은 평가를 받습니다.'
-  }
-};
 
 // 복지몰 상품 매칭 사전
 const MALL_PRODUCTS = {
@@ -413,69 +374,7 @@ function ResultContent() {
         <p className="result-desc">{resultData.description}</p>
       </div>
 
-      {/* 3. 오늘 나를 이끌 타로 카드 결과 노출 (고도화) */}
-      {resultData.tarotId && (
-        <div className="section-card card tarot-result-card fade-in">
-          <div className="card-header-row">
-            <Sparkles size={18} className="icon-gold" />
-            <h3>오늘 나의 운명 타로 거울 해독</h3>
-          </div>
-          
-          {resultData.tarotQuestion && (
-            <div className="tarot-question-box">
-              <span className="question-tag">질문</span>
-              <p className="question-text">" {resultData.tarotQuestion} "</p>
-            </div>
-          )}
-
-          {resultData.tarotSpread === 'three' && resultData.tarotCards ? (
-            <div className="tarot-spread-three-container">
-              <div className="spread-cards-grid">
-                {resultData.tarotCards.split(',').map((cardId, index) => {
-                  const card = TAROT_CARDS_DATA[cardId] || TAROT_CARDS_DATA.fool;
-                  const stepLabel = index === 0 ? '과거 (원인)' : index === 1 ? '현재 (상태)' : '미래 (해법)';
-                  return (
-                    <div key={index} className="tarot-card-item card">
-                      <span className="step-label">{stepLabel}</span>
-                      <div className="tarot-card-image-box">
-                        <img src={card.img} alt={card.name} className="tarot-card-img-large" />
-                      </div>
-                      <h4 className="tarot-card-title">{card.name}</h4>
-                      <p className="tarot-card-desc">{card.desc}</p>
-                      <div className="tarot-card-advice-box">
-                        <p className="tarot-card-advice">{card.advice}</p>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          ) : (
-            // 단일 카드 뷰
-            <div className="tarot-spread-one-container">
-              <div className="tarot-one-layout">
-                <div className="tarot-card-image-box single-card">
-                  <img 
-                    src={TAROT_CARDS_DATA[resultData.tarotId]?.img || TAROT_CARDS_DATA.fool.img} 
-                    alt={tarotInfo.name} 
-                    className="tarot-card-img-large" 
-                  />
-                </div>
-                <div className="tarot-one-text-box">
-                  <span className="step-label">오늘의 핵심 열쇠</span>
-                  <h4 className="tarot-card-title">{tarotInfo.name}</h4>
-                  <p className="tarot-card-desc">{tarotInfo.desc}</p>
-                  <div className="tarot-card-advice-box">
-                    <p className="tarot-card-advice">{tarotInfo.advice}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* 4. 성격 지표 비율 그래프 */}
+      {/* 3. 성격 지표 비율 그래프 */}
       <div className="section-card card">
         <div className="card-header-row">
           <Network size={20} className="icon-orange" />

@@ -110,13 +110,8 @@ export default function ProfilePage() {
     };
     localStorage.setItem('office_universe_profile', JSON.stringify(profile));
 
-    // 선택한 모드에 따른 동적 페이지 이동
-    const selectedMode = localStorage.getItem('office_universe_mode') || 'test';
-    if (selectedMode === 'tarot') {
-      router.push('/tarot');
-    } else {
-      router.push('/test');
-    }
+    // 설문 페이지로 이동 (설문 전용 버전 — 모드 분기 없음)
+    router.push('/test');
   };
 
   return (
