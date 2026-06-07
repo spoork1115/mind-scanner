@@ -1,0 +1,356 @@
+/* 전역 CSS 디자인 시스템 */
+
+:root {
+  /* HSL 색상 시스템 정의 */
+  --primary: 16 100% 62%;        /* 활기차고 격려를 주는 오렌지 (#FF6F3C) */
+  --primary-hover: 16 100% 55%;
+  --primary-light: 16 100% 95%;
+  
+  --bg-creme: 34 100% 97%;       /* 편안함을 주는 크림 베이지 (#FFFDF9) */
+  --bg-card: 0 0% 100%;          /* 카드 컴포넌트용 완전한 흰색 */
+  
+  --text-dark: 210 24% 16%;      /* 눈의 피로를 최소화하는 숯색 (#1E252B) */
+  --text-muted: 210 12% 45%;     /* 부차적 텍스트용 회색 */
+  
+  --accent-mint: 150 60% 45%;    /* 성공/배지 획득에 쓰이는 민트색 */
+  --accent-peach: 355 85% 68%;   /* 경고/주의에 쓰이는 피치 코랄 */
+  
+  --shadow-sm: 0 2px 8px rgba(30, 37, 43, 0.04);
+  --shadow-md: 0 8px 20px rgba(30, 37, 43, 0.08);
+  --shadow-lg: 0 16px 36px rgba(30, 37, 43, 0.12);
+  
+  --radius-sm: 12px;
+  --radius-md: 18px;
+  --radius-lg: 24px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', 'Noto Sans KR', sans-serif;
+  background-color: hsl(210, 16%, 93%); /* 전체 브라우저 배경은 연회색 */
+  color: hsl(var(--text-dark));
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* 모바일 퍼스트 컨테이너 (최대 480px) */
+.app-container {
+  width: 100%;
+  max-width: 480px;
+  height: 100vh;
+  background-color: hsl(var(--bg-creme));
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow-y: auto;
+  scrollbar-width: none; /* Firefox */
+}
+
+.app-container::-webkit-scrollbar {
+  display: none; /* Safari, Chrome */
+}
+
+.app-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  padding-bottom: 110px; /* Thumb Zone 버튼 자리를 비워둠 */
+  position: relative;
+}
+
+/* Typography */
+h1 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 26px;
+  font-weight: 800;
+  color: hsl(var(--text-dark));
+  line-height: 1.3;
+}
+
+h2 {
+  font-size: 20px;
+  font-weight: 700;
+  color: hsl(var(--text-dark));
+  margin-bottom: 12px;
+}
+
+h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: hsl(var(--text-dark));
+  margin-bottom: 8px;
+}
+
+p {
+  font-size: 16px;
+  line-height: 1.5;
+  color: hsl(var(--text-muted));
+}
+
+/* UI Components */
+.card {
+  background-color: hsl(var(--bg-card));
+  border-radius: var(--radius-md);
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid rgba(0, 0, 0, 0.03);
+  margin-bottom: 16px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+/* 모바일 최적화 인풋 */
+.input-field {
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  border: 2px solid hsl(210, 16%, 88%);
+  font-size: 16px;
+  background-color: #fff;
+  color: hsl(var(--text-dark));
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.input-field:focus {
+  border-color: hsl(var(--primary));
+}
+
+.select-field {
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  border: 2px solid hsl(210, 16%, 88%);
+  font-size: 16px;
+  background-color: #fff;
+  color: hsl(var(--text-dark));
+  outline: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg fill='none' stroke='gray' stroke-width='2' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'><path stroke-linecap='round' stroke-linejoin='round' d='M19.5 8.25l-7.5 7.5-7.5-7.5'></path></svg>");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  background-size: 16px;
+}
+
+/* 터치 타겟이 충분한 버튼 시스템 */
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 54px;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: 700;
+  border-radius: var(--radius-lg);
+  border: none;
+  cursor: pointer;
+  transition: transform 0.15s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+  user-select: none;
+  text-decoration: none;
+}
+
+.btn-primary {
+  background-color: hsl(var(--primary));
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(255, 111, 60, 0.35);
+}
+
+.btn-primary:hover {
+  background-color: hsl(var(--primary-hover));
+}
+
+.btn-primary:active {
+  transform: scale(0.97);
+}
+
+.btn-secondary {
+  background-color: #fff;
+  color: hsl(var(--text-dark));
+  border: 2px solid hsl(210, 16%, 88%);
+}
+
+.btn-secondary:hover {
+  background-color: hsl(210, 16%, 97%);
+}
+
+.btn-secondary:active {
+  transform: scale(0.97);
+}
+
+/* 엄지손가락이 닿기 편리한 썸존(Thumb Zone) 하단 액션 버튼 바 */
+.thumb-zone-action {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 16px 24px 28px 24px;
+  background: linear-gradient(to top, hsl(var(--bg-creme)) 80%, rgba(255, 253, 249, 0) 100%);
+  z-index: 100;
+}
+
+.thumb-zone-action.fixed {
+  position: fixed;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+/* 마스코트 CSS 캐릭터 그래픽 */
+.mascot-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px 0;
+}
+
+.mascot {
+  width: 120px;
+  height: 120px;
+  position: relative;
+  background-color: hsl(var(--primary));
+  border-radius: 50% 50% 45% 45%;
+  box-shadow: var(--shadow-md);
+  animation: float 3s ease-in-out infinite;
+}
+
+.mascot::before {
+  content: '';
+  position: absolute;
+  top: 15px;
+  left: -8px;
+  width: 28px;
+  height: 28px;
+  background-color: hsl(var(--primary));
+  border-radius: 50%;
+  transform: rotate(-30deg);
+}
+
+.mascot::after {
+  content: '';
+  position: absolute;
+  top: 15px;
+  right: -8px;
+  width: 28px;
+  height: 28px;
+  background-color: hsl(var(--primary));
+  border-radius: 50%;
+  transform: rotate(30deg);
+}
+
+.mascot-face {
+  position: absolute;
+  top: 40px;
+  left: 20px;
+  right: 20px;
+  height: 50px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.mascot-eyes {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 10px;
+}
+
+.mascot-eye {
+  width: 14px;
+  height: 14px;
+  background-color: hsl(var(--text-dark));
+  border-radius: 50%;
+  position: relative;
+}
+
+.mascot-eye::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 5px;
+  height: 5px;
+  background-color: #fff;
+  border-radius: 50%;
+}
+
+.mascot-cheeks {
+  position: absolute;
+  top: 15px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+}
+
+.mascot-cheek {
+  width: 16px;
+  height: 8px;
+  background-color: hsl(var(--accent-peach));
+  border-radius: 50%;
+  opacity: 0.7;
+}
+
+.mascot-mouth {
+  width: 20px;
+  height: 10px;
+  border: 3px solid hsl(var(--text-dark));
+  border-top: none;
+  border-radius: 0 0 10px 10px;
+  margin: 0 auto;
+}
+
+/* 로딩 스켈레톤 효과 */
+.skeleton {
+  background: linear-gradient(90deg, #ecebeb 25%, #f3f3f3 37%, #ecebeb 63%);
+  background-size: 400% 100%;
+  animation: skeleton-loading 1.4s ease infinite;
+}
+
+.skeleton-text {
+  height: 16px;
+  margin-bottom: 8px;
+  border-radius: 4px;
+}
+
+.skeleton-title {
+  height: 24px;
+  width: 60%;
+  margin-bottom: 16px;
+  border-radius: 6px;
+}
+
+/* Animations */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+@keyframes skeleton-loading {
+  0% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.fade-in {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
