@@ -137,7 +137,7 @@ export async function POST(request) {
       participantId: savedRecord.id,
       mbti: mbti,
       title: baseResult.title,
-      mascot: baseResult.mascot,
+      mascot: profile.mood || baseResult.mascot,
       description: baseResult.description,
       meaning: baseResult.meaning,
       fortune: personalizedFortune,

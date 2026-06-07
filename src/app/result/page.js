@@ -658,31 +658,34 @@ function ResultContent() {
 
       {/* 11. 공유 및 바이럴 링크 생성 영역 */}
       <div className="action-buttons-grid">
+        <button className="btn btn-secondary share-btn" onClick={handleShareAlert}>
+          <Share2 size={18} style={{ marginRight: '6px' }} />
+          관계 매칭 공유
+        </button>
+
+        <button className="btn btn-secondary share-btn" onClick={handleCopyLink}>
+          {copied ? <Check size={18} style={{ marginRight: '6px', color: 'green' }} /> : <Link2 size={18} style={{ marginRight: '6px' }} />}
+          {copied ? '복사 완료!' : '초대링크 복사'}
+        </button>
+
         {isHostView ? (
-          <>
-            <button className="btn btn-secondary share-btn" onClick={handleShareAlert}>
-              <Share2 size={18} style={{ marginRight: '6px' }} />
-              관계 매칭 공유
-            </button>
-
-            <button className="btn btn-secondary share-btn" onClick={handleCopyLink}>
-              {copied ? <Check size={18} style={{ marginRight: '6px', color: 'green' }} /> : <Link2 size={18} style={{ marginRight: '6px' }} />}
-              {copied ? '복사 완료!' : '초대링크 복사'}
-            </button>
-
-            <button className="btn btn-primary retry-btn" onClick={() => router.push('/')}>
-              <RotateCcw size={18} style={{ marginRight: '6px' }} />
-              다시 하기
-            </button>
-          </>
+          <button className="btn btn-primary retry-btn" onClick={() => router.push('/')}>
+            <RotateCcw size={18} style={{ marginRight: '6px' }} />
+            다시 하기
+          </button>
         ) : (
           <button className="btn btn-primary full-btn" onClick={() => router.push('/')}>
-            나도 마인드미러 테스트하러 가기 🔮
+            나도 마인드미러 만들기 🔮
           </button>
         )}
       </div>
 
       <style jsx>{`
+        @keyframes floatAnim {
+          0% { transform: translateY(0); }
+          50% { transform: translateY(-5px); }
+          100% { transform: translateY(0); }
+        }
         .result-container {
           display: flex;
           flex-direction: column;
@@ -1238,6 +1241,7 @@ function ResultContent() {
           align-items: center;
           justify-content: center;
           box-shadow: 0 4px 10px rgba(142, 68, 173, 0.3);
+          animation: floatAnim 3s ease-in-out infinite;
         }
         .node-avatar {
           width: 54px;
@@ -1274,6 +1278,7 @@ function ResultContent() {
           box-shadow: var(--shadow-sm);
           transition: all 0.2s ease;
           padding: 0;
+          animation: floatAnim 4s ease-in-out infinite alternate;
         }
         .guest-node-btn:hover, .guest-node-btn.active {
           transform: scale(1.1);

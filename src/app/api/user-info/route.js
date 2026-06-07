@@ -25,8 +25,10 @@ export async function GET(request) {
     const baseResult = RESULT_TYPES[mbti] || RESULT_TYPES.ISFP;
     
     // 계획된 우연 이론 기반 맞춤 텍스트 가공
-    const personalizedFortune = `올해 ${user.zodiac}띠 생존 흐름과 사내 ${user.role} 직무 역학을 결합해 분석한 결과입니다. ${baseResult.fortune}`;
-    const personalizedWarning = `${user.role} 역할로서 업무 도중 ${baseResult.warning}`;
+    const randomFortune = Array.isArray(baseResult.fortune) ? baseResult.fortune[Math.floor(Math.random() * baseResult.fortune.length)] : baseResult.fortune;
+    const randomWarning = Array.isArray(baseResult.warning) ? baseResult.warning[Math.floor(Math.random() * baseResult.warning.length)] : baseResult.warning;
+    const personalizedFortune = `사내 ${user.role} 직무 역학을 결합해 분석한 결과입니다. ${randomFortune}`;
+    const personalizedWarning = `${user.role} 역할로서 업무 도중 ${randomWarning}`;
 
     const burnoutState = 'safe';
     const burnoutTitle = '양호 (충전 중)';
@@ -41,8 +43,9 @@ export async function GET(request) {
         zodiac: user.zodiac,
         mbti: user.mbti,
         title: baseResult.title,
-        mascot: baseResult.mascot,
+        mascot: user.mood || baseResult.mascot,
         description: baseResult.description,
+        meaning: baseResult.meaning,
         fortune: personalizedFortune,
         happenstance: baseResult.happenstance,
         happenstanceType: baseResult.happenstanceType,
