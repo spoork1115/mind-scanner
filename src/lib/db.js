@@ -151,11 +151,31 @@ async function loadFromCloud() {
       next: { revalidate: 0 } // Next.js 캐싱 우회
     });
     if (res.ok) {
-      const data = await res.json();
+      const text = await res.text();
+      if (!text || text.trim() === '' || text.trim() === '""') {
+        // 클라우드가 빈 데이터 반환 → 로컬/메모리 유지
+        console.log('Cloud returned empty data, keeping local.');
+        return false;
+      }
+      const data = JSON.parse(text);
       if (data && Array.isArray(data.participants) && Array.isArray(data.relations)) {
-        // 기존 시드 데이터 보존을 위해 가져온 데이터 병합 처리
-        global.officeUniverseDb.participants = data.participants;
-        global.officeUniverseDb.relations = data.relations;
+        // 기존 메모리 데이터와 클라우드 데이터를 ID 기반으로 병합 (데이터 유실 방지)
+        const mergedParticipants = [...global.officeUniverseDb.participants];
+        data.participants.forEach(cp => {
+          if (!mergedParticipants.some(mp => mp.id === cp.id)) {
+            mergedParticipants.push(cp);
+          }
+        });
+
+        const mergedRelations = [...global.officeUniverseDb.relations];
+        data.relations.forEach(cr => {
+          if (!mergedRelations.some(mr => mr.id === cr.id)) {
+            mergedRelations.push(cr);
+          }
+        });
+
+        global.officeUniverseDb.participants = mergedParticipants;
+        global.officeUniverseDb.relations = mergedRelations;
         // 로컬에 최신 본 반영
         saveToFile();
         return true;
