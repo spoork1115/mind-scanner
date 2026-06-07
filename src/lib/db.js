@@ -1,12 +1,16 @@
 // 임시 메모리 데이터베이스 (Vercel Serverless Function warm start 범위 내 작동)
 // 데이터가 유실되더라도 항상 매칭이 가능하도록 Mock 임직원 시드 데이터를 내장합니다.
+// 버셀 배포 시 데이터 유실을 해결하기 위해 공개 무료 Key-Value 스토어 API를 연동합니다.
 
+const CLOUD_DB_URL = 'https://api.keyvalue.xyz/39a2fb37/mindmirror';
+
+// 기본 로컬 메모리 구조 초기화
 if (!global.officeUniverseDb) {
   global.officeUniverseDb = {
     participants: [
       {
         id: 'seed-uuid-1',
-        name: '김도훈 대리',
+        name: '철두철미 엑셀마스터 토끼대리',
         role: '대리/선임',
         age: 31,
         gender: 'M',
@@ -17,7 +21,7 @@ if (!global.officeUniverseDb) {
       },
       {
         id: 'seed-uuid-2',
-        name: '이지원 인턴',
+        name: '보이지않는 서포터 뱀주니어',
         role: '인턴/주니어',
         age: 25,
         gender: 'F',
@@ -28,7 +32,7 @@ if (!global.officeUniverseDb) {
       },
       {
         id: 'seed-uuid-3',
-        name: '박서준 과장',
+        name: '전략기획실 AI 말과장',
         role: '과장/차장/책임',
         age: 37,
         gender: 'M',
@@ -39,7 +43,7 @@ if (!global.officeUniverseDb) {
       },
       {
         id: 'seed-uuid-4',
-        name: '최민수 부장',
+        name: '정시퇴근 캘린더 개부장',
         role: '부장/수석',
         age: 46,
         gender: 'M',
@@ -50,7 +54,7 @@ if (!global.officeUniverseDb) {
       },
       {
         id: 'seed-uuid-5',
-        name: '한소희 사원',
+        name: '회의실구석 몽상가 돼지사원',
         role: '사원/연구원',
         age: 29,
         gender: 'F',
@@ -65,7 +69,7 @@ if (!global.officeUniverseDb) {
         id: 'seed-rel-1',
         hostId: 'seed-uuid-3',
         guestId: 'seed-uuid-1',
-        guestName: '김도훈 대리',
+        guestName: '철두철미 엑셀마스터 토끼대리',
         guestBirth: '1999-04-12',
         guestZodiac: '토끼',
         guestRole: '대리/선임',
@@ -80,7 +84,7 @@ if (!global.officeUniverseDb) {
         id: 'seed-rel-2',
         hostId: 'seed-uuid-3',
         guestId: 'seed-uuid-4',
-        guestName: '최민수 부장',
+        guestName: '정시퇴근 캘린더 개부장',
         guestBirth: '1982-10-09',
         guestZodiac: '개',
         guestRole: '부장/수석',
@@ -95,25 +99,72 @@ if (!global.officeUniverseDb) {
   };
 }
 
+// 클라우드 저장소로부터 데이터를 읽어와서 메모리 싱크
+async function loadFromCloud() {
+  try {
+    const res = await fetch(CLOUD_DB_URL, { 
+      method: 'GET',
+      headers: {
+        'Cache-Control': 'no-cache'
+      },
+      next: { revalidate: 0 } // Next.js 캐싱 우회
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (data && Array.isArray(data.participants) && Array.isArray(data.relations)) {
+        // 기존 시드 데이터 보존을 위해 가져온 데이터 병합 처리
+        global.officeUniverseDb.participants = data.participants;
+        global.officeUniverseDb.relations = data.relations;
+        return true;
+      }
+    }
+  } catch (err) {
+    console.error('Cloud DB Load Failed, using memory:', err);
+  }
+  return false;
+}
+
+// 현재 메모리 상태를 클라우드에 비동기/동기 업로드 보관
+async function syncToCloud() {
+  try {
+    await fetch(CLOUD_DB_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(global.officeUniverseDb)
+    });
+  } catch (err) {
+    console.error('Cloud DB Sync Failed:', err);
+  }
+}
+
 export const db = {
+  // DB 초기화 및 최신 정보 동기화 (각 API의 시작 지점에 호출하여 분산 서버리스 환경 지원)
+  init: async () => {
+    await loadFromCloud();
+  },
+
   // 전체 리스트 조회
   getParticipants: () => {
     return global.officeUniverseDb.participants;
   },
   
   // 신규 등록
-  addParticipant: (participant) => {
+  addParticipant: async (participant) => {
     const newRecord = {
       ...participant,
       id: participant.id || 'usr-' + Math.random().toString(36).substr(2, 9),
       registeredAt: new Date().toISOString()
     };
     
-    // 중복 제거 후 추가 (사번이나 식별 정보가 없으므로 uuid로 관리)
     global.officeUniverseDb.participants = global.officeUniverseDb.participants.filter(
       p => p.id !== newRecord.id
     );
     global.officeUniverseDb.participants.push(newRecord);
+    
+    // 원격 DB 저장
+    await syncToCloud();
     return newRecord;
   },
 
@@ -135,37 +186,41 @@ export const db = {
   },
 
   // 관계 추가
-  addRelation: (relation) => {
+  addRelation: async (relation) => {
     const newRelation = {
       ...relation,
       id: relation.id || 'rel-' + Math.random().toString(36).substr(2, 9),
       registeredAt: new Date().toISOString()
     };
     global.officeUniverseDb.relations.push(newRelation);
+    
+    // 원격 DB 저장
+    await syncToCloud();
     return newRelation;
   },
 
-  // 24시간 지난 구 데이터 파기 (당일 자정 파기 규정 준수)
-  cleanupExpired: () => {
+  // 24시간 지난 구 데이터 파기
+  cleanupExpired: async () => {
     const now = new Date();
     const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
     
     const beforePartCount = global.officeUniverseDb.participants.length;
     const beforeRelCount = global.officeUniverseDb.relations.length;
 
-    // 시드 데이터는 유지하고, 당일 생성된 실 데이터 중 날짜가 지난 데이터만 필터링 파기
     global.officeUniverseDb.participants = global.officeUniverseDb.participants.filter(p => {
-      if (p.id.startsWith('seed-uuid-')) return true; // 시드는 보관
+      if (p.id.startsWith('seed-uuid-')) return true;
       const regTime = new Date(p.registeredAt).getTime();
-      return regTime >= todayStart; // 오늘 생성된 데이터만 유지
+      return regTime >= todayStart;
     });
 
     global.officeUniverseDb.relations = global.officeUniverseDb.relations.filter(r => {
-      if (r.id.startsWith('seed-rel-')) return true; // 시드는 보관
+      if (r.id.startsWith('seed-rel-')) return true;
       const regTime = new Date(r.registeredAt).getTime();
       return regTime >= todayStart;
     });
     
+    await syncToCloud();
+
     return {
       cleanedParticipantsCount: beforePartCount - global.officeUniverseDb.participants.length,
       cleanedRelationsCount: beforeRelCount - global.officeUniverseDb.relations.length

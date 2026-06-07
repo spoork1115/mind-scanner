@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Mascot from '@/components/Mascot';
-import { ArrowLeft, ChevronRight, Calendar, Briefcase, Smile, Sparkles } from 'lucide-react';
+import { ArrowLeft, ChevronRight, Calendar, Briefcase, Smile } from 'lucide-react';
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -26,10 +26,6 @@ export default function ProfilePage() {
   const [hostId, setHostId] = useState(null);
   const [hostName, setHostName] = useState('');
 
-  // 타로 카드 상태
-  const [tarotId, setTarotId] = useState(null);
-  const [flippedCardId, setFlippedCardId] = useState(null);
-
   // 띠 목록
   const zodiacs = ['쥐', '소', '호랑이', '토끼', '용', '뱀', '말', '양', '원숭이', '닭', '개', '돼지'];
   
@@ -50,34 +46,6 @@ export default function ProfilePage() {
     { id: 'think', emoji: '🤔', label: '생각 많음' },
     { id: 'wink', emoji: '😉', label: '유쾌 발랄' },
     { id: 'sad', emoji: '😩', label: '방전/피곤' },
-  ];
-
-  // 타로 카드 목록 정의 (오늘 나의 운명 카드)
-  const tarotCards = [
-    { 
-      id: 'fool', 
-      name: 'The Fool (바보)', 
-      emoji: '🃏', 
-      desc: '새로운 도전과 자유. 오늘 예측 불허의 상황도 긍정적 기회가 됩니다.' 
-    },
-    { 
-      id: 'magician', 
-      name: 'The Magician (마법사)', 
-      emoji: '🧙', 
-      desc: '무한한 능력과 기획력. 준비해 온 창조적 능력을 발휘할 최고의 날!' 
-    },
-    { 
-      id: 'empress', 
-      name: 'The Empress (여황제)', 
-      emoji: '👑', 
-      desc: '풍요와 원만한 협업. 동료들과의 조화를 통해 든든한 결실을 얻습니다.' 
-    },
-    { 
-      id: 'hermit', 
-      name: 'The Hermit (은둔자)', 
-      emoji: '🕯️', 
-      desc: '고독과 지혜로운 성찰. 시끄러운 메신저를 끄고 딥워크에 집중하세요.' 
-    }
   ];
 
   // 년, 월, 일 배열 생성
@@ -123,39 +91,32 @@ export default function ProfilePage() {
     setZodiac(zodiacs[zodiacIdx]);
   }, [birthYear, birthMonth, birthDay]);
 
-  // 타로 카드 플립 처리
-  const handleTarotClick = (cardId) => {
-    setFlippedCardId(cardId);
-    setTarotId(cardId);
-  };
-
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    if (!tarotId) {
-      alert('오늘 당신의 운명을 비춰줄 타로 카드를 한 장 선택해 주세요!');
-      return;
-    }
 
     // YYYY-MM-DD 포맷 조합
     const formattedMonth = birthMonth.padStart(2, '0');
     const formattedDay = birthDay.padStart(2, '0');
     const birthDate = `${birthYear}-${formattedMonth}-${formattedDay}`;
     
-    // 로컬 스토리지에 프로필 임시 저장 (이름은 제거되었으므로 서버 닉네임 작명 결과를 기대함)
+    // 로컬 스토리지에 프로필 임시 저장
     const profile = { 
       birthDate, 
       role, 
       age, 
       zodiac, 
       gender, 
-      mood,
-      tarotId
+      mood 
     };
     localStorage.setItem('office_universe_profile', JSON.stringify(profile));
 
-    // 테스트 진행 페이지로 이동
-    router.push('/test');
+    // 선택한 모드에 따른 동적 페이지 이동
+    const selectedMode = localStorage.getItem('office_universe_mode') || 'test';
+    if (selectedMode === 'tarot') {
+      router.push('/tarot');
+    } else {
+      router.push('/test');
+    }
   };
 
   return (
@@ -166,7 +127,7 @@ export default function ProfilePage() {
           <ArrowLeft size={24} />
         </button>
         <span className="nav-title">
-          {hostName ? `${hostName}님과의 마인드 매칭` : '프로필 및 운명 설정'}
+          {hostName ? `${hostName}님과의 마인드 매칭` : '프로필 작성'}
         </span>
         <div style={{ width: '24px' }}></div>
       </div>
@@ -232,52 +193,6 @@ export default function ProfilePage() {
             <span className="info-tag">{age}세</span>
             <span className="info-tag primary-tag">{zodiac}띠</span>
           </div>
-        </div>
-
-        {/* 타로 카드 선택 영역 (인터랙티브 3D Flip) */}
-        <div className="form-group card tarot-selection-group">
-          <label className="form-label">
-            <Sparkles size={16} className="inline-icon" /> 오늘의 운명을 이끌 타로 카드 선택
-          </label>
-          <p className="tarot-guide">마음에 드는 카드 한 장을 클릭하여 뒤집어주세요.</p>
-          
-          <div className="tarot-grid">
-            {tarotCards.map((card) => {
-              const isSelected = tarotId === card.id;
-              const isFlipped = flippedCardId === card.id;
-              
-              return (
-                <div 
-                  key={card.id} 
-                  className={`tarot-card-container ${isSelected ? 'selected' : ''}`}
-                  onClick={() => handleTarotClick(card.id)}
-                >
-                  <div className={`tarot-card-inner ${isFlipped ? 'flipped' : ''}`}>
-                    {/* 카드 뒷면 */}
-                    <div className="tarot-card-back">
-                      <div className="tarot-back-pattern">🔮</div>
-                      <span className="card-back-text">MIRROR</span>
-                    </div>
-                    {/* 카드 앞면 */}
-                    <div className="tarot-card-front">
-                      <span className="tarot-front-emoji">{card.emoji}</span>
-                      <h4 className="tarot-front-name">{card.name}</h4>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* 선택한 타로 카드 해석 한줄 노출 */}
-          {tarotId && (
-            <div className="tarot-desc-box fade-in">
-              <span className="tarot-badge">선택 카드: {tarotCards.find(c => c.id === tarotId).name}</span>
-              <p className="tarot-desc-text">
-                "{tarotCards.find(c => c.id === tarotId).desc}"
-              </p>
-            </div>
-          )}
         </div>
 
         {/* 직책 선택 */}
@@ -352,7 +267,7 @@ export default function ProfilePage() {
           flex-direction: column;
           height: auto;
           padding-bottom: 40px;
-          font-family: 'Gowun Batang', serif;
+          font-family: 'Jua', sans-serif;
         }
         .top-nav {
           display: flex;
@@ -447,116 +362,6 @@ export default function ProfilePage() {
           color: hsl(var(--primary));
           border-color: rgba(255, 111, 60, 0.2);
         }
-        
-        /* 타로 카드 뒤집기 스타일 */
-        .tarot-selection-group {
-          display: flex;
-          flex-direction: column;
-        }
-        .tarot-guide {
-          font-size: 12px;
-          color: hsl(var(--text-muted));
-          margin-bottom: 12px;
-        }
-        .tarot-grid {
-          display: grid;
-          grid-template-columns: repeat(4, 1fr);
-          gap: 8px;
-          perspective: 1000px;
-        }
-        .tarot-card-container {
-          aspect-ratio: 2 / 3.2;
-          cursor: pointer;
-        }
-        .tarot-card-inner {
-          position: relative;
-          width: 100%;
-          height: 100%;
-          text-align: center;
-          transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-          transform-style: preserve-3d;
-          border-radius: 8px;
-          box-shadow: var(--shadow-sm);
-        }
-        .tarot-card-inner.flipped {
-          transform: rotateY(180deg);
-        }
-        .tarot-card-back, .tarot-card-front {
-          position: absolute;
-          width: 100%;
-          height: 100%;
-          -webkit-backface-visibility: hidden;
-          backface-visibility: hidden;
-          border-radius: 8px;
-          border: 2px solid hsl(var(--primary));
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-        }
-        .tarot-card-back {
-          background-color: hsl(34, 100%, 97%);
-          color: hsl(var(--primary));
-        }
-        .tarot-back-pattern {
-          font-size: 22px;
-          margin-bottom: 2px;
-        }
-        .card-back-text {
-          font-size: 8px;
-          font-weight: 800;
-          letter-spacing: 0.5px;
-        }
-        .tarot-card-front {
-          background-color: #fff;
-          color: hsl(var(--text-dark));
-          transform: rotateY(180deg);
-          border-color: #ffb89f;
-          padding: 4px;
-        }
-        .tarot-card-container.selected .tarot-card-inner {
-          box-shadow: 0 0 10px rgba(255, 111, 60, 0.5);
-        }
-        .tarot-card-container.selected .tarot-card-back,
-        .tarot-card-container.selected .tarot-card-front {
-          border-color: #ff6f3c;
-          border-width: 2.5px;
-        }
-        .tarot-front-emoji {
-          font-size: 24px;
-        }
-        .tarot-front-name {
-          font-size: 9px;
-          font-weight: 800;
-          margin-top: 4px;
-          line-height: 1.1;
-        }
-        .tarot-desc-box {
-          background-color: hsl(34, 100%, 97%);
-          border: 1px solid rgba(255, 111, 60, 0.2);
-          border-radius: var(--radius-sm);
-          padding: 12px;
-          margin-top: 12px;
-          text-align: center;
-        }
-        .tarot-badge {
-          display: inline-block;
-          font-size: 11px;
-          font-weight: 800;
-          background-color: hsl(var(--primary-light));
-          color: hsl(var(--primary));
-          padding: 2px 8px;
-          border-radius: 4px;
-          margin-bottom: 6px;
-        }
-        .tarot-desc-text {
-          font-size: 12.5px;
-          color: hsl(var(--text-dark));
-          line-height: 1.45;
-          font-weight: 500;
-        }
-
-        /* 공용 성별/기분 등 */
         .gender-btn-group {
           display: flex;
           gap: 8px;
@@ -568,7 +373,6 @@ export default function ProfilePage() {
           border: 2px solid hsl(210, 16%, 88%);
           background-color: #fff;
           font-size: 14px;
-          font-family: 'Gowun Batang', serif;
           font-weight: 600;
           color: hsl(var(--text-dark));
           cursor: pointer;

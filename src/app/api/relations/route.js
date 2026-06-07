@@ -5,6 +5,7 @@ import { db } from '@/lib/db';
 
 export async function GET(request) {
   try {
+    await db.init(); // 클라우드 DB 연동 초기화
     const { searchParams } = new URL(request.url);
     const userId = searchParams.get('userId');
 

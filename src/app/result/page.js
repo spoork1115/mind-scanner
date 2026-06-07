@@ -14,22 +14,38 @@ const TAROT_CARDS_DATA = {
   fool: {
     name: 'The Fool (바보 카드) 🃏',
     desc: '새로운 도전과 자유로운 모험의 상징',
+    img: 'https://upload.wikimedia.org/wikipedia/commons/9/90/RWS_Tarot_00_Fool.jpg',
     advice: '오늘 직장에서 무모해 보이는 도전이나 갑작스러운 기획 변경이 생기더라도 두려워하지 마세요! 예측 불허의 상황이 당신에게 가장 유리하고 긍정적인 반전 기회를 가져다줍니다. 엉뚱한 발상이 대박의 시작이 될 수 있으니 생각을 적극적으로 피력해 보세요.'
   },
   magician: {
     name: 'The Magician (마법사 카드) 🧙',
     desc: '무한한 창의성과 탁월한 재능의 상징',
+    img: 'https://upload.wikimedia.org/wikipedia/commons/d/de/RWS_Tarot_01_Magician.jpg',
     advice: '준비된 지식과 기획력이 최고조로 빛나는 날입니다. 오늘 열리는 회의나 PT, 슬랙 소통에서 당신의 의견은 강한 설득력을 발휘하여 동료들을 끌어당길 것입니다. 당신의 능력을 마음껏 연출하고 자랑해도 좋은 타이밍입니다.'
   },
   empress: {
     name: 'The Empress (여황제 카드) 👑',
     desc: '풍요와 만족, 따뜻한 포용력의 상징',
+    img: 'https://upload.wikimedia.org/wikipedia/commons/e/e5/RWS_Tarot_03_Empress.jpg',
     advice: '팀원들과의 협업이 더없이 매끄럽고 풍요로운 결실을 맺는 하루입니다. 오늘은 탕비실에 소소한 간식을 채우거나, 동료에게 가벼운 칭찬 한마디를 건네보세요. 베푼 친절이 몇 배의 만족감과 보상으로 당신에게 돌아올 것입니다.'
   },
   hermit: {
     name: 'The Hermit (은둔자 카드) 🕯️',
     desc: '조용한 성찰과 깊이 있는 지혜의 상징',
+    img: 'https://upload.wikimedia.org/wikipedia/commons/4/4d/RWS_Tarot_09_Hermit.jpg',
     advice: '사소한 사내 정치나 가벼운 잡담에서 한 걸음 물러나 침묵을 지키는 것이 이로운 날입니다. 오늘은 메신저 알림을 잠시 끄고 딥워크(Deep Work)에 몰두하여 엑셀이나 코드 오탈자 검토에 집중해 보세요. 조용한 성찰 속에서 완벽한 아이디어가 완성됩니다.'
+  },
+  chariot: {
+    name: 'The Chariot (전차 카드) 🛒',
+    desc: '강력한 추진력과 극복의 상징',
+    img: 'https://upload.wikimedia.org/wikipedia/commons/9/9b/RWS_Tarot_07_Chariot.jpg',
+    advice: '오늘 직장에서 어려운 태스크나 막히던 결재 라인이 있나요? 주저하지 말고 강력하게 추진해 보세요. 돌파력이 최고조에 달한 상태이므로, 당당한 태도로 상대방을 설득하면 결국 당신의 의도대로 업무를 주도하게 될 것입니다.'
+  },
+  wheel: {
+    name: 'Wheel of Fortune (수레바퀴 카드) 🎡',
+    desc: '변화와 기회, 순환의 상징',
+    img: 'https://upload.wikimedia.org/wikipedia/commons/3/3c/RWS_Tarot_10_Wheel_of_Fortune.jpg',
+    advice: '갑작스러운 업무 조정, 팀 재배치, 스케줄 변동이 생기더라도 전혀 걱정하지 마세요. 이는 운명이 가져다준 긍정적인 터닝 포인트입니다. 파도에 몸을 싣듯 자연스럽게 흐름을 타고 대세에 맞추면 오히려 좋은 평가를 받습니다.'
   }
 };
 
@@ -40,37 +56,55 @@ const MALL_PRODUCTS = {
     { title: '지압용 고체 스트레스 볼 (그립퍼)', price: '6,500원', emoji: '✊', link: 'https://gift.kakao.com' }
   ],
   burnout_warning: [
-    { title: '사무용 무선 저소음 키보드 & 마우스', price: '38,900원', emoji: '⌨️', link: 'https://gift.kakao.com' },
-    { title: '비타민 충전 상큼 레몬 사탕 박스', price: '12,000원', emoji: '🍋', link: 'https://gift.kakao.com' }
-  ],
-  T: [
-    { title: '초정밀 엑셀 단축키 가죽 데스크 매트', price: '19,800원', emoji: '📏', link: 'https://gift.kakao.com' },
-    { title: '고농축 카페인 다크 초콜릿 세트', price: '15,000원', emoji: '🍫', link: 'https://gift.kakao.com' }
-  ],
-  F: [
-    { title: '감성 반려 식물 미니 마리모 키우기', price: '11,500원', emoji: '🌿', link: 'https://gift.kakao.com' },
-    { title: '동료 교환용 칭찬 & 격려 스티커 팩', price: '4,500원', emoji: '💌', link: 'https://gift.kakao.com' }
-  ],
-  N: [
-    { title: '아이디어 스케치북 & 스마트 터치펜', price: '24,000원', emoji: '✏️', link: 'https://gift.kakao.com' },
-    { title: '회의실 무한 포스트잇 패드 세트', price: '8,900원', emoji: '📝', link: 'https://gift.kakao.com' }
-  ],
-  S: [
-    { title: '인체공학 메모리폼 기능성 자세 방석', price: '32,000원', emoji: '🪑', link: 'https://gift.kakao.com' },
-    { title: '오피스 시간 관리 전용 타임 타이머', price: '16,500원', emoji: '⏱️', link: 'https://gift.kakao.com' }
-  ]
-};
+    { title: '사무용 무선 저소음 키보드 & 마우스', price: '38,900원', emoji: '⌨️', link: 'https://gift.k  useEffect(() => {
+    if (!resultId) return;
 
-function ResultContent() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const resultId = searchParams.get('id');
-
-  const [resultData, setResultData] = useState(null);
-  const [relations, setRelations] = useState([]);
-  const [copied, setCopied] = useState(false);
-  
-  // 아코디언/탭 컨트롤 상태
+    const cachedResultStr = localStorage.getItem('office_universe_last_result');
+    const cachedId = localStorage.getItem('office_universe_last_result_id');
+    
+    if (cachedResultStr && cachedId === resultId) {
+      setResultData(JSON.parse(cachedResultStr));
+      setIsHostView(true);
+    } else {
+      // 타인 고유 ID 뷰 (실시간 DB Fetch 조회)
+      const fetchUserData = async () => {
+        try {
+          const res = await fetch(`/api/user-info?id=${resultId}`);
+          const data = await res.json();
+          if (data.success && data.user) {
+            setResultData(data.user);
+          } else {
+            // 실패 시 로컬 스토리지 또는 mock 백업
+            if (cachedResultStr) {
+              setResultData(JSON.parse(cachedResultStr));
+            } else {
+              setResultData({
+                participantId: resultId,
+                name: '행복한 아티스트 토끼사원',
+                mbti: 'ISFP',
+                title: '평화주의 아티스트',
+                mascot: 'smile',
+                description: '사내 갈등을 유연하게 피해 가며 조용하고 잔잔하게 팀에 기여하는 예술가!',
+                fortune: '올해 토끼띠 생존 흐름과 사내 직무 역학을 결합해 분석한 결과입니다. 갈등이 없는 평화로운 사무실 분위기 속에서 조용하고 편안하게 루틴 업무를 마칠 수 있는 날입니다.',
+                warning: '동료의 피드백 요구에 마냥 "다 좋아요"만 대답하다 나중에 꼬이지 않도록, 필요한 의견은 명확히 피력하세요.',
+                burnout: {
+                  score: 0,
+                  state: 'safe',
+                  title: '양호 (충전 중)',
+                  advice: '업무 강도가 적절하며, 스트레스 관리가 잘 되고 있습니다.'
+                },
+                scores: { E: 1, I: 2, N: 1, S: 2, T: 1, F: 2, P: 2, J: 1 }
+              });
+            }
+          }
+        } catch (err) {
+          console.error('Failed to fetch user result:', err);
+        }
+      };
+      fetchUserData();
+      setIsHostView(false);
+    }
+  }, [resultId]);�코디언/탭 컨트롤 상태
   const [showTheory, setShowTheory] = useState(false);
   const [selectedRelation, setSelectedRelation] = useState(null);
 
