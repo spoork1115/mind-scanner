@@ -257,7 +257,7 @@ export default function OnboardingPage() {
         
         /* 거울 방식 선택 영역 */
         .mode-selection-zone {
-          margin-top: auto;
+          margin-top: 24px;
         }
         .mode-guide-title {
           font-size: 14px;

@@ -903,28 +903,32 @@ function ResultContent() {
           width: 100%;
         }
         .spread-cards-grid {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 10px;
+          display: flex;
+          flex-direction: column;
+          gap: 20px;
+          align-items: center;
         }
         .tarot-card-item {
           display: flex;
           flex-direction: column;
           align-items: center;
-          padding: 10px;
+          padding: 16px;
           background-color: #fff;
-          border: 1px solid rgba(241, 196, 15, 0.2);
-          border-radius: 8px;
+          border: 1px solid rgba(241, 196, 15, 0.22);
+          border-radius: 12px;
           text-align: center;
           margin-bottom: 0;
+          width: 100%;
+          max-width: 320px;
+          box-shadow: var(--shadow-sm);
         }
         .step-label {
           font-size: 11px;
           font-weight: 800;
           color: #b79500;
-          margin-bottom: 6px;
+          margin-bottom: 8px;
           background-color: hsl(45, 100%, 95%);
-          padding: 2px 6px;
+          padding: 3px 8px;
           border-radius: 10px;
         }
         .tarot-card-image-box {
@@ -937,9 +941,14 @@ function ResultContent() {
           margin-bottom: 8px;
           background-color: #fafafa;
         }
+        .tarot-card-item .tarot-card-image-box {
+          width: 200px;
+          height: 320px;
+          flex-shrink: 0;
+        }
         .tarot-card-image-box.single-card {
-          width: 220px;
-          height: 352px;
+          width: 260px;
+          height: 416px;
           flex-shrink: 0;
           margin: 0 auto 16px auto;
         }
@@ -953,22 +962,20 @@ function ResultContent() {
           transform: scale(1.05);
         }
         .tarot-card-title {
-          font-size: 12.5px;
+          font-size: 15px;
           font-weight: 800;
           color: hsl(var(--text-dark));
-          margin-bottom: 2px;
+          margin-bottom: 6px;
           line-height: 1.2;
         }
         .tarot-card-desc {
-          font-size: 10.5px;
+          font-size: 12.5px;
           color: hsl(var(--text-muted));
-          margin-bottom: 8px;
-          line-height: 1.3;
-          height: 2.6em;
-          overflow: hidden;
-          display: -webkit-box;
-          -webkit-line-clamp: 2;
-          -webkit-box-orient: vertical;
+          margin-bottom: 12px;
+          line-height: 1.45;
+          height: auto;
+          overflow: visible;
+          display: block;
         }
         .tarot-card-advice-box {
           background-color: hsl(45, 100%, 98.5%);

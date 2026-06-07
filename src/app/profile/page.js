@@ -315,6 +315,7 @@ export default function ProfilePage() {
           display: flex;
           flex-direction: column;
           gap: 4px;
+          margin-bottom: 110px;
         }
         .form-group {
           margin-bottom: 8px;

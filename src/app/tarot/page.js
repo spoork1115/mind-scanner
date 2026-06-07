@@ -405,6 +405,7 @@ export default function TarotTestPage() {
           flex-direction: column;
           gap: 8px;
           margin-top: 10px;
+          margin-bottom: 110px;
         }
         .template-btn {
           width: 100%;
@@ -445,6 +446,7 @@ export default function TarotTestPage() {
           display: flex;
           flex-direction: column;
           gap: 12px;
+          margin-bottom: 110px;
         }
         .spread-card {
           display: flex;
