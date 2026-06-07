@@ -399,13 +399,18 @@ export default function TarotTestPage() {
           line-height: 1.5;
         }
 
+        .step-content {
+          display: flex;
+          flex-direction: column;
+          margin-bottom: 120px;
+        }
+
         /* 1단계 질문선택 */
         .templates-list {
           display: flex;
           flex-direction: column;
           gap: 8px;
           margin-top: 10px;
-          margin-bottom: 110px;
         }
         .template-btn {
           width: 100%;
@@ -446,7 +451,6 @@ export default function TarotTestPage() {
           display: flex;
           flex-direction: column;
           gap: 12px;
-          margin-bottom: 110px;
         }
         .spread-card {
           display: flex;
