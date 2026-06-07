@@ -14,22 +14,38 @@ const TAROT_CARDS_DATA = {
   fool: {
     name: 'The Fool (바보 카드) 🃏',
     desc: '새로운 도전과 자유로운 모험의 상징',
+    img: 'https://upload.wikimedia.org/wikipedia/commons/9/90/RWS_Tarot_00_Fool.jpg',
     advice: '오늘 직장에서 무모해 보이는 도전이나 갑작스러운 기획 변경이 생기더라도 두려워하지 마세요! 예측 불허의 상황이 당신에게 가장 유리하고 긍정적인 반전 기회를 가져다줍니다. 엉뚱한 발상이 대박의 시작이 될 수 있으니 생각을 적극적으로 피력해 보세요.'
   },
   magician: {
     name: 'The Magician (마법사 카드) 🧙',
     desc: '무한한 창의성과 탁월한 재능의 상징',
+    img: 'https://upload.wikimedia.org/wikipedia/commons/d/de/RWS_Tarot_01_Magician.jpg',
     advice: '준비된 지식과 기획력이 최고조로 빛나는 날입니다. 오늘 열리는 회의나 PT, 슬랙 소통에서 당신의 의견은 강한 설득력을 발휘하여 동료들을 끌어당길 것입니다. 당신의 능력을 마음껏 연출하고 자랑해도 좋은 타이밍입니다.'
   },
   empress: {
     name: 'The Empress (여황제 카드) 👑',
     desc: '풍요와 만족, 따뜻한 포용력의 상징',
+    img: 'https://upload.wikimedia.org/wikipedia/commons/e/e5/RWS_Tarot_03_Empress.jpg',
     advice: '팀원들과의 협업이 더없이 매끄럽고 풍요로운 결실을 맺는 하루입니다. 오늘은 탕비실에 소소한 간식을 채우거나, 동료에게 가벼운 칭찬 한마디를 건네보세요. 베푼 친절이 몇 배의 만족감과 보상으로 당신에게 돌아올 것입니다.'
   },
   hermit: {
     name: 'The Hermit (은둔자 카드) 🕯️',
     desc: '조용한 성찰과 깊이 있는 지혜의 상징',
+    img: 'https://upload.wikimedia.org/wikipedia/commons/4/4d/RWS_Tarot_09_Hermit.jpg',
     advice: '사소한 사내 정치나 가벼운 잡담에서 한 걸음 물러나 침묵을 지키는 것이 이로운 날입니다. 오늘은 메신저 알림을 잠시 끄고 딥워크(Deep Work)에 몰두하여 엑셀이나 코드 오탈자 검토에 집중해 보세요. 조용한 성찰 속에서 완벽한 아이디어가 완성됩니다.'
+  },
+  chariot: {
+    name: 'The Chariot (전차 카드) 🛒',
+    desc: '강력한 추진력과 극복의 상징',
+    img: 'https://upload.wikimedia.org/wikipedia/commons/9/9b/RWS_Tarot_07_Chariot.jpg',
+    advice: '오늘 직장에서 어려운 태스크나 막히던 결재 라인이 있나요? 주저하지 말고 강력하게 추진해 보세요. 돌파력이 최고조에 달한 상태이므로, 당당한 태도로 상대방을 설득하면 결국 당신의 의도대로 업무를 주도하게 될 것입니다.'
+  },
+  wheel: {
+    name: 'Wheel of Fortune (수레바퀴 카드) 🎡',
+    desc: '변화와 기회, 순환의 상징',
+    img: 'https://upload.wikimedia.org/wikipedia/commons/3/3c/RWS_Tarot_10_Wheel_of_Fortune.jpg',
+    advice: '갑작스러운 업무 조정, 팀 재배치, 스케줄 변동이 생기더라도 전혀 걱정하지 마세요. 이는 운명이 가져다준 긍정적인 터닝 포인트입니다. 파도에 몸을 싣듯 자연스럽게 흐름을 타고 대세에 맞추면 오히려 좋은 평가를 받습니다.'
   }
 };
 
@@ -77,7 +93,7 @@ function ResultContent() {
   // 로컬 정보 기반 본인 페이지 확인
   const [isHostView, setIsHostView] = useState(false);
 
-  useEffect(() => {
+    useEffect(() => {
     if (!resultId) return;
 
     const cachedResultStr = localStorage.getItem('office_universe_last_result');
@@ -87,33 +103,42 @@ function ResultContent() {
       setResultData(JSON.parse(cachedResultStr));
       setIsHostView(true);
     } else {
-      // 타인 고유 ID 뷰 (또는 게스트가 테스트 마친 직후)
-      if (cachedResultStr) {
-        setResultData(JSON.parse(cachedResultStr));
-      } else {
-        // 백업용 템플릿
-        const mockResult = {
-          participantId: resultId,
-          name: '아이디어 부스터 토끼대리',
-          mbti: 'ENFP',
-          title: '아이디어 넘치는 부스터',
-          mascot: 'energetic',
-          description: '긍정적인 마인드로 주변에 호기심을 마구 전파하는 프로 탐험러! 신선한 활력을 조직에 뿜어냅니다.',
-          fortune: '올해 토끼띠 생존 흐름과 사내 대리/선임 직무 역학을 결합해 분석한 결과입니다. 창의적인 에너지가 샘솟는 활기찬 하루입니다. 지루한 반복 업무는 잠시 뒤로 하고 기획 업무에 집중해보세요.',
-          happenstance: '새로운 사람을 만나거나 낯선 부서의 요청을 받는 일은 모두 보물 같은 "호기심"의 자극원입니다. 오늘 일어나는 예기치 못한 스케줄 충돌마저 유쾌하게 받아들이면 의외의 수확을 거둡니다.',
-          happenstanceType: '호기심(Curiosity)',
-          warning: '대리/선임 역할로서 업무 도중 오후 4시 급격한 집중력 분산 및 먼 산 바라보기 주의! 찬 바람을 쐬며 스트레칭을 3분 하세요.',
-          burnout: {
-            score: 0,
-            state: 'safe',
-            title: '양호 (충전 중)',
-            advice: '업무 강도가 적절하며, 스트레스 관리가 잘 되고 있습니다. 현재 페이스를 유지하세요!'
-          },
-          scores: { E: 3, I: 0, N: 2, S: 1, T: 1, F: 2, P: 2, J: 1 },
-          tarotId: 'magician'
-        };
-        setResultData(mockResult);
-      }
+      // 타인 고유 ID 뷰 (실시간 DB Fetch 조회)
+      const fetchUserData = async () => {
+        try {
+          const res = await fetch(`/api/user-info?id=${resultId}`);
+          const data = await res.json();
+          if (data.success && data.user) {
+            setResultData(data.user);
+          } else {
+            // 실패 시 로컬 스토리지 또는 mock 백업
+            if (cachedResultStr) {
+              setResultData(JSON.parse(cachedResultStr));
+            } else {
+              setResultData({
+                participantId: resultId,
+                name: '행복한 아티스트 토끼사원',
+                mbti: 'ISFP',
+                title: '평화주의 아티스트',
+                mascot: 'smile',
+                description: '사내 갈등을 유연하게 피해 가며 조용하고 잔잔하게 팀에 기여하는 예술가!',
+                fortune: '올해 토끼띠 생존 흐름과 사내 직무 역학을 결합해 분석한 결과입니다. 갈등이 없는 평화로운 사무실 분위기 속에서 조용하고 편안하게 루틴 업무를 마칠 수 있는 날입니다.',
+                warning: '동료의 피드백 요구에 마냥 "다 좋아요"만 대답하다 나중에 꼬이지 않도록, 필요한 의견은 명확히 피력하세요.',
+                burnout: {
+                  score: 0,
+                  state: 'safe',
+                  title: '양호 (충전 중)',
+                  advice: '업무 강도가 적절하며, 스트레스 관리가 잘 되고 있습니다.'
+                },
+                scores: { E: 1, I: 2, N: 1, S: 2, T: 1, F: 2, P: 2, J: 1 }
+              });
+            }
+          }
+        } catch (err) {
+          console.error('Failed to fetch user result:', err);
+        }
+      };
+      fetchUserData();
       setIsHostView(false);
     }
   }, [resultId]);
@@ -388,28 +413,65 @@ function ResultContent() {
         <p className="result-desc">{resultData.description}</p>
       </div>
 
-      {/* 3. 오늘 나를 이끌 타로 카드 결과 노출 (NEW) */}
+      {/* 3. 오늘 나를 이끌 타로 카드 결과 노출 (고도화) */}
       {resultData.tarotId && (
         <div className="section-card card tarot-result-card fade-in">
           <div className="card-header-row">
             <Sparkles size={18} className="icon-gold" />
-            <h3>오늘 나의 운명 타로 카드</h3>
+            <h3>오늘 나의 운명 타로 거울 해독</h3>
           </div>
-          <div className="tarot-result-body">
-            <div className="tarot-result-card-visual">
-              <div className="tarot-result-emoji">
-                {resultData.tarotId === 'fool' && '🃏'}
-                {resultData.tarotId === 'magician' && '🧙'}
-                {resultData.tarotId === 'empress' && '👑'}
-                {resultData.tarotId === 'hermit' && '🕯️'}
+          
+          {resultData.tarotQuestion && (
+            <div className="tarot-question-box">
+              <span className="question-tag">질문</span>
+              <p className="question-text">" {resultData.tarotQuestion} "</p>
+            </div>
+          )}
+
+          {resultData.tarotSpread === 'three' && resultData.tarotCards ? (
+            <div className="tarot-spread-three-container">
+              <div className="spread-cards-grid">
+                {resultData.tarotCards.split(',').map((cardId, index) => {
+                  const card = TAROT_CARDS_DATA[cardId] || TAROT_CARDS_DATA.fool;
+                  const stepLabel = index === 0 ? '과거 (원인)' : index === 1 ? '현재 (상태)' : '미래 (해법)';
+                  return (
+                    <div key={index} className="tarot-card-item card">
+                      <span className="step-label">{stepLabel}</span>
+                      <div className="tarot-card-image-box">
+                        <img src={card.img} alt={card.name} className="tarot-card-img-large" />
+                      </div>
+                      <h4 className="tarot-card-title">{card.name}</h4>
+                      <p className="tarot-card-desc">{card.desc}</p>
+                      <div className="tarot-card-advice-box">
+                        <p className="tarot-card-advice">{card.advice}</p>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
-              <span className="tarot-result-card-name">{tarotInfo.name}</span>
             </div>
-            <div className="tarot-result-text-box">
-              <h4 className="tarot-result-sub">{tarotInfo.desc}</h4>
-              <p className="tarot-result-advice">{tarotInfo.advice}</p>
+          ) : (
+            // 단일 카드 뷰
+            <div className="tarot-spread-one-container">
+              <div className="tarot-one-layout">
+                <div className="tarot-card-image-box single-card">
+                  <img 
+                    src={TAROT_CARDS_DATA[resultData.tarotId]?.img || TAROT_CARDS_DATA.fool.img} 
+                    alt={tarotInfo.name} 
+                    className="tarot-card-img-large" 
+                  />
+                </div>
+                <div className="tarot-one-text-box">
+                  <span className="step-label">오늘의 핵심 열쇠</span>
+                  <h4 className="tarot-card-title">{tarotInfo.name}</h4>
+                  <p className="tarot-card-desc">{tarotInfo.desc}</p>
+                  <div className="tarot-card-advice-box">
+                    <p className="tarot-card-advice">{tarotInfo.advice}</p>
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       )}
 
@@ -714,7 +776,7 @@ function ResultContent() {
           flex-direction: column;
           height: auto;
           padding-bottom: 40px;
-          font-family: 'Gowun Batang', serif;
+          font-family: 'Jua', sans-serif;
         }
         .loading-fallback {
           display: flex;
@@ -803,50 +865,153 @@ function ResultContent() {
         /* 타로 결과 카드 스타일 */
         .tarot-result-card {
           border-left: 5px solid #f1c40f;
-          background-color: hsl(45, 100%, 98%);
+          background-color: hsl(45, 100%, 98.5%);
         }
-        .tarot-result-body {
-          display: flex;
-          gap: 16px;
-          align-items: center;
-          margin-top: 8px;
-        }
-        .tarot-result-card-visual {
-          width: 70px;
-          height: 110px;
-          border-radius: 8px;
-          border: 2px solid #f1c40f;
+        .tarot-question-box {
           background-color: #fff;
+          border: 1px solid rgba(241, 196, 15, 0.25);
+          padding: 10px 14px;
+          border-radius: 8px;
+          margin-bottom: 16px;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+        .question-tag {
+          font-size: 11px;
+          font-weight: 800;
+          color: #fff;
+          background-color: #f1c40f;
+          padding: 2px 6px;
+          border-radius: 4px;
+          flex-shrink: 0;
+        }
+        .question-text {
+          font-size: 13px;
+          font-weight: 700;
+          color: hsl(var(--text-dark));
+          margin: 0;
+          line-height: 1.4;
+        }
+        .tarot-spread-three-container {
+          width: 100%;
+        }
+        .spread-cards-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 10px;
+        }
+        .tarot-card-item {
           display: flex;
           flex-direction: column;
           align-items: center;
-          justify-content: center;
-          box-shadow: var(--shadow-sm);
-          flex-shrink: 0;
+          padding: 10px;
+          background-color: #fff;
+          border: 1px solid rgba(241, 196, 15, 0.2);
+          border-radius: 8px;
+          text-align: center;
+          margin-bottom: 0;
         }
-        .tarot-result-emoji {
-          font-size: 32px;
-        }
-        .tarot-result-card-name {
-          font-size: 8px;
+        .step-label {
+          font-size: 11px;
           font-weight: 800;
           color: #b79500;
-          margin-top: 4px;
-          text-align: center;
+          margin-bottom: 6px;
+          background-color: hsl(45, 100%, 95%);
+          padding: 2px 6px;
+          border-radius: 10px;
         }
-        .tarot-result-text-box {
+        .tarot-card-image-box {
+          width: 100%;
+          aspect-ratio: 1 / 1.6;
+          border-radius: 6px;
+          overflow: hidden;
+          border: 1.5px solid #f1c40f;
+          box-shadow: var(--shadow-sm);
+          margin-bottom: 8px;
+          background-color: #fafafa;
+        }
+        .tarot-card-image-box.single-card {
+          width: 150px;
+          height: 240px;
+          flex-shrink: 0;
+        }
+        .tarot-card-img-large {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          transition: transform 0.3s ease;
+        }
+        .tarot-card-img-large:hover {
+          transform: scale(1.05);
+        }
+        .tarot-card-title {
+          font-size: 12.5px;
+          font-weight: 800;
+          color: hsl(var(--text-dark));
+          margin-bottom: 2px;
+          line-height: 1.2;
+        }
+        .tarot-card-desc {
+          font-size: 10.5px;
+          color: hsl(var(--text-muted));
+          margin-bottom: 8px;
+          line-height: 1.3;
+          height: 2.6em;
+          overflow: hidden;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+        }
+        .tarot-card-advice-box {
+          background-color: hsl(45, 100%, 98.5%);
+          border: 1.5px solid rgba(241, 196, 15, 0.1);
+          padding: 8px;
+          border-radius: 6px;
+          width: 100%;
+          flex: 1;
+          display: flex;
+          align-items: center;
+        }
+        .tarot-card-advice {
+          font-size: 11px;
+          line-height: 1.4;
+          color: hsl(var(--text-dark));
+          text-align: left;
+          margin: 0;
+        }
+
+        /* 1장 배열 스타일 */
+        .tarot-spread-one-container {
+          width: 100%;
+        }
+        .tarot-one-layout {
+          display: flex;
+          gap: 16px;
+          align-items: flex-start;
+          background-color: #fff;
+          padding: 12px;
+          border: 1px solid rgba(241, 196, 15, 0.2);
+          border-radius: 8px;
+        }
+        .tarot-one-text-box {
+          display: flex;
+          flex-direction: column;
           flex: 1;
         }
-        .tarot-result-sub {
-          font-size: 14px;
-          font-weight: 700;
-          color: hsl(var(--text-dark));
-          margin-bottom: 6px;
+        .tarot-one-text-box .tarot-card-title {
+          font-size: 16px;
+          margin-top: 4px;
         }
-        .tarot-result-advice {
+        .tarot-one-text-box .tarot-card-desc {
+          font-size: 13px;
+          height: auto;
+          display: block;
+          margin-bottom: 12px;
+        }
+        .tarot-one-text-box .tarot-card-advice {
           font-size: 12.5px;
           line-height: 1.5;
-          color: hsl(var(--text-muted));
         }
 
         /* 게스트 매칭 카드 스타일 */
