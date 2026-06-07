@@ -163,9 +163,6 @@ function ResultContent() {
     { leftKey: 'P', leftLabel: '인식형 (P)', rightKey: 'J', rightLabel: '판단형 (J)', desc: '업무 실행 및 계획성' },
   ];
 
-  // 타로 카드 정보 매핑
-  const tarotInfo = TAROT_CARDS_DATA[resultData.tarotId] || TAROT_CARDS_DATA.fool;
-
   // 복지몰 상품 추천 목록 구성
   const getRecommendedProducts = () => {
     let products = [];
