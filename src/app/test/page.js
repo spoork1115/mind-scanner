@@ -104,6 +104,16 @@ export default function TestPage() {
           // 로컬스토리지에 결과 ID 보관 및 게이미피케이션 포인트 적립
           localStorage.setItem('office_universe_last_result_id', result.participantId);
           localStorage.setItem('office_universe_last_result', JSON.stringify(result));
+
+          // 관계 데이터를 localStorage에 저장 (서버 DB 장애 시에도 관계망 표시 보장)
+          if (result.relation) {
+            const existingRelations = JSON.parse(localStorage.getItem('office_universe_relations') || '[]');
+            // 중복 방지
+            if (!existingRelations.some(r => r.id === result.relation.id)) {
+              existingRelations.push(result.relation);
+            }
+            localStorage.setItem('office_universe_relations', JSON.stringify(existingRelations));
+          }
           
           // 출석 및 참여 포인트 적립 (+100 포인트)
           const currentPoints = parseInt(localStorage.getItem('office_universe_points') || '0');
