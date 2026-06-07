@@ -68,7 +68,7 @@ export default function MyPage() {
         <button className="back-btn" onClick={handleBack} aria-label="이전 화면으로">
           <ArrowLeft size={24} />
         </button>
-        <span className="nav-title">나의 오피스 행성</span>
+        <span className="nav-title">나의 마인드미러</span>
         <div style={{ width: '24px' }}></div>
       </div>
 
@@ -115,7 +115,7 @@ export default function MyPage() {
 
       {/* 3. 획득한 배지 리스트 (게이미피케이션 시각화) */}
       <div className="badges-section card">
-        <h3 className="section-title">🏆 획득한 생존 훈장 ({badges.length}개)</h3>
+        <h3 className="section-title">🏆 획득한 마인드미러 뱃지 ({badges.length}개)</h3>
         <div className="badges-grid">
           {badgeDefinitions.map(b => {
             const isEarned = badges.includes(b.id);
@@ -144,18 +144,18 @@ export default function MyPage() {
       <div className="section-card card crm-demo-card">
         <div className="card-header-row">
           <Calendar size={18} className="icon-orange" />
-          <h3>오전 9시 생존 배달 (푸시 체험)</h3>
+          <h3>오전 9시 관계 꿀팁 배달 (푸시 체험)</h3>
         </div>
         <p className="crm-desc">
           매일 출근 시간에 전송되는 유머러스하고 매력적인 푸시 메시지 샘플입니다.
         </p>
         <div className="crm-preview-box">
           <div className="crm-preview-header">
-            <span>🔔 오피스 유니버스 알림</span>
+            <span>🔔 마인드미러 알림</span>
             <span className="crm-time">오전 09:00</span>
           </div>
           <p className="crm-preview-content">
-            <strong>[짜장면] vs [짬뽕]</strong>, 오늘 점심의 운명은? 탕수육 한 조각의 행운을 덤으로 드려요! 🍀
+            <strong>[오늘 피해야 할 동료]</strong>가 나에게 말을 걸었다면? 침착하게 미소를 지으며 3초 후 대답해보세요! 🍀
           </p>
           <a 
             href="#" 

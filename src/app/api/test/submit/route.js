@@ -150,9 +150,79 @@ const RESULT_TYPES = {
   }
 };
 
+// MBTI 및 띠 궁합 점수 연산 헬퍼
+function calculateScore(host, guest) {
+  let score = 50;
+  const hMbti = host.mbti;
+  const gMbti = guest.mbti;
+  if (!hMbti || !gMbti || hMbti.length !== 4 || gMbti.length !== 4) return score;
+
+  if (hMbti[1] === gMbti[1]) score += 20; // 인식 기능 일치
+  if (hMbti[2] !== gMbti[2]) score += 15; // T/F 상호보완
+  if (hMbti[0] !== gMbti[0]) score += 10; // 외향/내향 보완
+  if (hMbti[3] !== gMbti[3]) score += 5;  // 생활 양식 조화
+
+  const zodiacHarmony = {
+    '쥐': ['용', '원숭이'], '소': ['뱀', '닭'], '호랑이': ['말', '개'], '토끼': ['양', '돼지'],
+    '용': ['쥐', '원숭이'], '뱀': ['소', '닭'], '말': ['호랑이', '개'], '양': ['토끼', '돼지'],
+    '원숭이': ['쥐', '용'], '닭': ['소', '뱀'], '개': ['호랑이', '말'], '돼지': ['토끼', '양']
+  };
+  if (zodiacHarmony[host.zodiac]?.includes(guest.zodiac)) {
+    score += 10;
+  }
+  return Math.min(100, score);
+}
+
+// 1:1 위트 있는 영향력 유형 분석 헬퍼
+function analyzeRelationship(host, guest, score) {
+  const hMbti = host.mbti;
+  const gMbti = guest.mbti;
+
+  if (score >= 85) {
+    return {
+      type: 'savior',
+      title: '오늘의 구원자 👼',
+      desc: `답답한 회의나 곤란한 상황에서 기막힌 타이밍의 쉴드로 당신을 구해줄 은인입니다. 오늘 이 동료에게 따뜻한 음료 한 잔을 선물해 보세요!`
+    };
+  }
+  if (score <= 55) {
+    return {
+      type: 'villain',
+      title: '피해야 할 대상 ☠️',
+      desc: `오늘 하루만큼은 사소한 의견 차이도 스파크로 번질 수 있습니다. 메신저 답장은 3분 정도 여유를 두고 차분하게 하시는 것을 추천합니다.`
+    };
+  }
+  if (hMbti[1] === 'N' && gMbti[1] === 'N') {
+    return {
+      type: 'booster',
+      title: '아이디어 부스터 🚀',
+      desc: `두 사람이 탕비실에서 나누는 사소한 잡담 속에서 회사 미래를 바꿀 대박 기획 아이디어가 탄생할 수 있습니다. 적극적인 스몰토크를 권장합니다.`
+    };
+  }
+  if (hMbti[2] === 'F' && gMbti[2] === 'F') {
+    return {
+      type: 'charger',
+      title: '감정 충전기 🔋',
+      desc: `지쳐있는 당신의 멘탈을 따뜻한 공감과 맞장구 리액션으로 100% 충전해 줄 햇살 같은 존재입니다. 오늘 커피 타임 파트너로 제격입니다.`
+    };
+  }
+  if (hMbti[2] === 'T' && gMbti[2] === 'T') {
+    return {
+      type: 'corrector',
+      title: '팩트 폭격기 🎯',
+      desc: `오늘 당신의 보고서에서 놓치기 쉬운 오탈자나 수식 오류를 칼같이 찾아내 줄 매서운 조력자입니다. 제출 전에 이분께 먼저 슬쩍 보여주세요.`
+    };
+  }
+  return {
+    type: 'workmate',
+    title: '야근 동반자 ☕',
+    desc: `정신없는 업무 일정 속에서 함께 퇴근 송을 흥얼거리며 버텨줄 의리파 동료입니다. 지친 오후 4시, 당 보충 젤리를 나눠 먹으며 힘내세요.`
+  };
+}
+
 export async function POST(request) {
   try {
-    const { profile, answers } = await request.json();
+    const { profile, answers, hostId } = await request.json();
 
     if (!profile || !answers) {
       return NextResponse.json({ error: '필수 데이터가 부족합니다.' }, { status: 400 });
@@ -212,10 +282,11 @@ export async function POST(request) {
       burnoutAdvice = '자신도 모르게 피로가 누적되고 있습니다. 예정에 없던 회의나 갑작스러운 추가 업무는 차분히 우선순위를 나누어 처리하세요.';
     }
 
-    // 6. 익명 데이터베이스에 저장 (사내 케미 매칭용)
+    // 6. 익명 데이터베이스에 저장 (마인드미러 참여자 등록)
     const participantId = 'usr-' + Math.random().toString(36).substr(2, 9);
     const savedRecord = db.addParticipant({
       id: participantId,
+      name: profile.name || `${profile.zodiac}띠 생존자`,
       role: profile.role,
       age: profile.age,
       gender: profile.gender,
@@ -223,6 +294,31 @@ export async function POST(request) {
       mood: profile.mood,
       mbti: mbti,
     });
+
+    // 7. 호스트 ID가 넘어왔을 경우 관계도 매핑 처리
+    let relationRecord = null;
+    let hostName = '';
+    if (hostId) {
+      const hostUser = db.getParticipants().find(p => p.id === hostId);
+      if (hostUser) {
+        hostName = hostUser.name;
+        const score = calculateScore(hostUser, savedRecord);
+        const relType = analyzeRelationship(hostUser, savedRecord, score);
+        
+        relationRecord = db.addRelation({
+          hostId: hostId,
+          guestName: savedRecord.name,
+          guestBirth: profile.birthDate || '',
+          guestZodiac: savedRecord.zodiac,
+          guestRole: savedRecord.role,
+          guestMbti: mbti,
+          influenceType: relType.type,
+          influenceTitle: relType.title,
+          influenceDesc: relType.desc,
+          compatibilityScore: score
+        });
+      }
+    }
 
     // 최종 결과 JSON 리턴
     return NextResponse.json({
@@ -242,7 +338,15 @@ export async function POST(request) {
         title: burnoutTitle,
         advice: burnoutAdvice,
         showBenefit: showBenefitLink
-      }
+      },
+      scores: scores, // UI 그래프 작성을 위해 세부 점수 반환
+      relation: relationRecord ? {
+        hostName: hostName,
+        influenceType: relationRecord.influenceType,
+        influenceTitle: relationRecord.influenceTitle,
+        influenceDesc: relationRecord.influenceDesc,
+        compatibilityScore: relationRecord.compatibilityScore
+      } : null
     });
 
   } catch (err) {

@@ -40,8 +40,8 @@ export default function OnboardingPage() {
       <div className="splash-screen fade-in">
         <div className="splash-content">
           <Mascot emotion="energetic" size={140} />
-          <h1 className="splash-title">오피스 유니버스</h1>
-          <p className="splash-subtitle">오늘의 직장인 생존 가이드</p>
+          <h1 className="splash-title">마인드미러</h1>
+          <p className="splash-subtitle">직장 내 나를 비춰보는 심리 거울</p>
         </div>
         <style jsx>{`
           .splash-screen {
@@ -80,10 +80,10 @@ export default function OnboardingPage() {
         <Mascot emotion="wink" size={120} />
         <h1 className="title-text">
           반가워요!<br />
-          여기는 <span className="highlight">오피스 유니버스</span>
+          여기는 <span className="highlight">마인드미러</span>
         </h1>
         <p className="desc-text">
-          매일 달라지는 직장의 운명, 예기치 못한 스트레스를 기회로 바꾸는 우리들만의 생존 가이드를 만나보세요.
+          나의 직무 성향을 정확하게 비춰보고, 동료들과의 관계를 시각화하여 더 즐겁고 매끄러운 오피스 라이프를 설계해 보세요.
         </p>
       </div>
 
@@ -105,8 +105,8 @@ export default function OnboardingPage() {
               <span className="terms-label">개인정보 수집 및 이용 동의</span>
             </div>
             <div className="terms-detail">
-              - <strong>수집목적</strong>: 직장인 생존 유형 진단 및 임직원 케미 매칭<br />
-              - <strong>수집항목</strong>: 직책, 나이, 성별, 띠, 오늘의 기분<br />
+              - <strong>수집목적</strong>: 직무 유형 성향 분석 및 동료 케미 매칭 관계도 제공<br />
+              - <strong>수집항목</strong>: 이름(닉네임), 생년월일, 직책, 오늘의 기분<br />
               - <strong>보유기간</strong>: <strong>수집 당일 자정(24:00) 즉시 영구 파기</strong> (식별 정보와 무관하게 익명 UUID로 안전히 임시 관리됩니다)
             </div>
           </div>
@@ -126,7 +126,7 @@ export default function OnboardingPage() {
               <span className="terms-label">오늘의 행운 푸시 알림 수신 동의</span>
             </div>
             <p className="terms-detail">
-              매일 오전 9시, 행운의 점심 메뉴 제안 및 직장 생존 팁 배달 혜택을 드립니다.
+              매일 오전 9시, 행운의 직장 소통 팁 및 관계 꿀팁 가이드 혜택을 드립니다.
             </p>
           </div>
         </label>
@@ -139,7 +139,7 @@ export default function OnboardingPage() {
           onClick={handleStart}
           disabled={!agreePrivacy}
         >
-          생존 가이드 받으러 가기
+          마인드미러 시작하기
           <ChevronRight size={20} style={{ marginLeft: '4px' }} />
         </button>
       </div>

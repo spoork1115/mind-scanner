@@ -44,6 +44,7 @@ export default function TestPage() {
       setIsSubmitting(true);
       
       try {
+        const hostId = localStorage.getItem('office_universe_guest_host_id');
         const response = await fetch('/api/test/submit', {
           method: 'POST',
           headers: {
@@ -51,7 +52,8 @@ export default function TestPage() {
           },
           body: JSON.stringify({
             profile,
-            answers: updatedAnswers
+            answers: updatedAnswers,
+            hostId: hostId || undefined
           })
         });
 
@@ -118,8 +120,8 @@ export default function TestPage() {
       <div className="loading-screen fade-in">
         <div className="loading-content">
           <Mascot emotion="think" size={130} />
-          <h2 className="loading-title">AI 캐릭터가 생존 유형 분석 중...</h2>
-          <p className="loading-subtitle">사내 {profile.role} 역학과 오늘의 감정 흐름을 행성 궤도에 매핑하고 있습니다.</p>
+          <h2 className="loading-title">마인드미러 분석 중...</h2>
+          <p className="loading-subtitle">사내 {profile.role} 역학과 상대방과의 성격 케미를 비춰보고 있습니다.</p>
           
           {/* 스켈레톤 디자인 모사 카드 */}
           <div className="skeleton-card card">
