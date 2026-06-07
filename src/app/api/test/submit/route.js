@@ -57,8 +57,10 @@ export async function POST(request) {
     const baseResult = RESULT_TYPES[mbti] || RESULT_TYPES.ISFP;
     
     // 4. 계획된 우연 이론 기반 맞춤 텍스트 가공
-    const personalizedFortune = `올해 ${profile.zodiac}띠 생존 흐름과 사내 ${profile.role} 직무 역학을 결합해 분석한 결과입니다. ${baseResult.fortune}`;
-    const personalizedWarning = `${profile.role} 역할로서 업무 도중 ${baseResult.warning}`;
+    const randomFortune = Array.isArray(baseResult.fortune) ? baseResult.fortune[Math.floor(Math.random() * baseResult.fortune.length)] : baseResult.fortune;
+    const randomWarning = Array.isArray(baseResult.warning) ? baseResult.warning[Math.floor(Math.random() * baseResult.warning.length)] : baseResult.warning;
+    const personalizedFortune = `사내 ${profile.role} 직무 역학을 결합해 분석한 결과입니다. ${randomFortune}`;
+    const personalizedWarning = `${profile.role} 역할로서 업무 도중 ${randomWarning}`;
 
     // 5. 번아웃 자가 진단 평가
     let burnoutState = 'safe'; 
@@ -113,12 +115,14 @@ export async function POST(request) {
           hostMbti: hostUser.mbti,
           hostZodiac: hostUser.zodiac,
           hostRole: hostUser.role,
+          hostMood: hostUser.mood,
           guestId: savedRecord.id,
           guestName: savedRecord.name,
           guestBirth: profile.birthDate || '',
           guestZodiac: savedRecord.zodiac,
           guestRole: savedRecord.role,
           guestMbti: mbti,
+          guestMood: savedRecord.mood,
           influenceType: relType.type,
           influenceTitle: relType.title,
           influenceDesc: relType.desc,
@@ -135,6 +139,7 @@ export async function POST(request) {
       title: baseResult.title,
       mascot: baseResult.mascot,
       description: baseResult.description,
+      meaning: baseResult.meaning,
       fortune: personalizedFortune,
       happenstance: baseResult.happenstance,
       happenstanceType: baseResult.happenstanceType,

@@ -400,6 +400,14 @@ function ResultContent() {
             );
           })}
         </div>
+        
+        {/* 성격 거울 지표 공감 설명 */}
+        {resultData.meaning && (
+          <div className="meaning-box fade-in">
+            <h4 className="meaning-title">나의 지표가 주는 의미 💡</h4>
+            <p className="meaning-text">{resultData.meaning}</p>
+          </div>
+        )}
       </div>
 
       {/* 5. 오늘의 직장 내 역할과 운세 */}
@@ -496,6 +504,7 @@ function ResultContent() {
                 const targetRole = rel.hostId === resultId ? rel.guestRole : rel.hostRole || '호스트';
                 const targetZodiac = rel.hostId === resultId ? rel.guestZodiac : rel.hostZodiac || '✨';
                 const targetMbti = rel.hostId === resultId ? rel.guestMbti : rel.hostMbti || 'ENFP';
+                const targetMood = rel.hostId === resultId ? rel.guestMood : rel.hostMood;
 
                 return (
                   <div key={`node-${rel.id}`} className="guest-node-wrapper" style={{ transform: `translate(${x}px, ${y}px)` }}>
@@ -504,7 +513,7 @@ function ResultContent() {
                       onClick={() => setSelectedRelation(rel)}
                     >
                       <span className="guest-node-zodiac">
-                        <Mascot size={32} mbti={targetMbti} emotion="smile" />
+                        <Mascot size={32} mbti={targetMbti} emotion={targetMood || 'smile'} />
                       </span>
                       <span className="guest-node-name">{targetName}</span>
                     </button>
@@ -690,6 +699,9 @@ function ResultContent() {
           color: hsl(var(--text-muted));
         }
         .result-header {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
           text-align: center;
           margin: 16px 0 24px 0;
         }
@@ -1107,6 +1119,25 @@ function ResultContent() {
         }
         .percent-text {
           font-family: 'Outfit', sans-serif;
+        }
+
+        .meaning-box {
+          margin-top: 20px;
+          padding: 16px;
+          background-color: hsl(var(--primary-light));
+          border: 1.5px solid rgba(255, 111, 60, 0.1);
+          border-radius: 12px;
+        }
+        .meaning-title {
+          font-size: 14px;
+          font-weight: 800;
+          color: hsl(var(--primary));
+          margin-bottom: 8px;
+        }
+        .meaning-text {
+          font-size: 13.5px;
+          line-height: 1.55;
+          color: hsl(var(--text-dark));
         }
 
         /* 이론 아코디언 스타일 */
