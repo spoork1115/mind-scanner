@@ -103,7 +103,8 @@ export async function POST(request) {
     let relationRecord = null;
     let hostName = '';
     if (hostId) {
-      const hostUser = db.getParticipants().find(p => p.id === hostId);
+      const participants = await db.getParticipants();
+      const hostUser = participants.find(p => p.id === hostId);
       if (hostUser) {
         hostName = hostUser.name;
         const score = calculateScore(hostUser, savedRecord);

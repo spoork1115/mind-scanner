@@ -13,7 +13,7 @@ export async function GET(request) {
       return NextResponse.json({ error: 'userId 파라미터가 필요합니다.' }, { status: 400 });
     }
 
-    const relations = db.getRelationsByUser(userId);
+    const relations = await db.getRelationsByUser(userId);
     return NextResponse.json({
       success: true,
       relations

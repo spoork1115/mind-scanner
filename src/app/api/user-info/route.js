@@ -14,7 +14,7 @@ export async function GET(request) {
       return NextResponse.json({ error: 'ID 파라미터가 유효하지 않습니다.' }, { status: 400 });
     }
 
-    const participants = db.getParticipants();
+    const participants = await db.getParticipants();
     const user = participants.find(p => p.id === id);
 
     if (!user) {
