@@ -702,7 +702,7 @@ function ResultContent() {
           flex-direction: column;
           height: auto;
           padding-bottom: 40px;
-          font-family: 'Jua', sans-serif;
+          font-family: 'GangwonEduAll', sans-serif;
         }
         .loading-fallback {
           display: flex;
@@ -721,7 +721,7 @@ function ResultContent() {
         }
         .type-badge {
           display: inline-block;
-          font-family: 'Jua', sans-serif;
+          font-family: 'GangwonEduAll', sans-serif;
           background-color: hsl(var(--primary-light));
           color: hsl(var(--primary));
           font-size: 14px;
@@ -1033,7 +1033,7 @@ function ResultContent() {
           border-radius: 12px;
           border: 1px solid rgba(255, 101, 132, 0.3);
           z-index: 2;
-          font-family: 'Jua', sans-serif;
+          font-family: 'GangwonEduAll', sans-serif;
         }
         .line-heart-bg {
           margin-top: -10px;
@@ -1132,7 +1132,7 @@ function ResultContent() {
           border-left: 1.5px solid #fff;
         }
         .percent-text {
-          font-family: 'Jua', sans-serif;
+          font-family: 'GangwonEduAll', sans-serif;
         }
 
         .meaning-box {
@@ -1342,7 +1342,7 @@ function ResultContent() {
           color: hsl(var(--text-dark));
         }
         .compat-score-badge {
-          font-family: 'Jua', sans-serif;
+          font-family: 'GangwonEduAll', sans-serif;
           background-color: #ff6584;
           color: #fff;
           font-size: 13px;
@@ -1477,7 +1477,7 @@ function ResultContent() {
           margin-top: 2px;
         }
         .item-score {
-          font-family: 'Jua', sans-serif;
+          font-family: 'GangwonEduAll', sans-serif;
           font-size: 14.5px;
           font-weight: 800;
           color: #ff6584;
@@ -1535,7 +1535,7 @@ function ResultContent() {
           font-size: 11px;
           font-weight: 800;
           color: #e74c3c;
-          font-family: 'Jua', sans-serif;
+          font-family: 'GangwonEduAll', sans-serif;
         }
         .welfare-buy-btn {
           font-size: 9px;

@@ -353,7 +353,7 @@ export default function TarotTestPage() {
           flex-direction: column;
           height: auto;
           min-height: 100vh;
-          font-family: 'Jua', sans-serif;
+          font-family: 'GangwonEduAll', sans-serif;
           padding-bottom: 120px;
         }
         .top-nav {
@@ -423,7 +423,7 @@ export default function TarotTestPage() {
           font-weight: 500;
           cursor: pointer;
           transition: all 0.2s;
-          font-family: 'Jua', sans-serif;
+          font-family: 'GangwonEduAll', sans-serif;
           color: hsl(var(--text-dark));
           line-height: 1.45;
         }
@@ -439,7 +439,7 @@ export default function TarotTestPage() {
           border-radius: var(--radius-sm);
           border: 2px solid hsl(var(--primary));
           background-color: #fff;
-          font-family: 'Jua', sans-serif;
+          font-family: 'GangwonEduAll', sans-serif;
           font-size: 13px;
           margin-top: 10px;
           outline: none;

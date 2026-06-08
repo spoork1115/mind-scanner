@@ -51,7 +51,7 @@ export default function OnboardingPage() {
             justify-content: center;
             height: 100vh;
             background-color: hsl(34, 100%, 97%);
-            font-family: 'Jua', sans-serif;
+            font-family: 'GangwonEduAll', sans-serif;
           }
           .splash-content {
             text-align: center;
@@ -158,7 +158,7 @@ export default function OnboardingPage() {
           flex-direction: column;
           height: auto;
           min-height: 100vh;
-          font-family: 'Jua', sans-serif;
+          font-family: 'GangwonEduAll', sans-serif;
           padding-bottom: 30px;
         }
         .header-section {

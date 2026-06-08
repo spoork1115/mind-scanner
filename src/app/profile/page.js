@@ -262,7 +262,7 @@ export default function ProfilePage() {
           flex-direction: column;
           height: auto;
           padding-bottom: 150px;
-          font-family: 'Jua', sans-serif;
+          font-family: 'GangwonEduAll', sans-serif;
         }
         .top-nav {
           display: flex;
