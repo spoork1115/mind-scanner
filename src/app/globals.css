@@ -30,6 +30,8 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  font-family: 'Jua', sans-serif !important;
+  font-weight: 400 !important;
 }
 
 body {
@@ -66,7 +68,7 @@ body {
   display: flex;
   flex-direction: column;
   padding: 24px;
-  padding-bottom: 110px; /* Thumb Zone 버튼 자리를 비워둠 */
+  padding-bottom: 130px; /* Thumb Zone 버튼 자리(fixed)를 비워둠 */
   position: relative;
 }
 
@@ -200,10 +202,10 @@ p {
 
 /* 엄지손가락이 닿기 편리한 썸존(Thumb Zone) 하단 액션 버튼 바 */
 .thumb-zone-action {
-  position: absolute;
+  position: fixed;
   bottom: 0;
-  left: 0;
-  right: 0;
+  max-width: 480px;
+  width: 100%;
   padding: 16px 24px 28px 24px;
   background: linear-gradient(to top, hsl(var(--bg-creme)) 80%, rgba(255, 253, 249, 0) 100%);
   z-index: 100;

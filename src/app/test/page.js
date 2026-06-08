@@ -185,7 +185,6 @@ export default function TestPage() {
             height: 100vh;
             padding: 24px;
             background-color: hsl(34, 100%, 97%);
-            font-family: 'Gowun Batang', serif;
           }
           .loading-content {
             text-align: center;
@@ -259,7 +258,6 @@ export default function TestPage() {
           flex-direction: column;
           height: auto;
           min-height: 100vh;
-          font-family: 'Gowun Batang', serif;
           padding-bottom: 30px;
           justify-content: flex-start;
           gap: 16px;

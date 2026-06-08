@@ -113,7 +113,18 @@ function ResultContent() {
         const response = await fetch(`/api/relations?userId=${resultId}`);
         const data = await response.json();
         if (data.success) {
-          setRelations(data.relations);
+          let fetchedRelations = data.relations || [];
+          
+          // 서버 통신 지연 대비: 방금 생성된 관계가 있다면 로컬 데이터에서 병합
+          const cachedResultStr = localStorage.getItem('office_universe_last_result');
+          const cachedId = localStorage.getItem('office_universe_last_result_id');
+          if (cachedResultStr && cachedId === resultId) {
+             const parsed = JSON.parse(cachedResultStr);
+             if (parsed.relation && !fetchedRelations.some(r => r.id === parsed.relation.id)) {
+                fetchedRelations.push(parsed.relation);
+             }
+          }
+          setRelations(fetchedRelations);
         }
       } catch (err) {
         console.error('Relations API error:', err);
@@ -303,7 +314,7 @@ function ResultContent() {
     <div className="result-container fade-in">
       
       {/* 1. 게스트 참여 후 1:1 궁합 리포트 최상단 표출 (게스트 1:1 전용 뷰) */}
-      {!isHostView && resultData.relation && (
+      {resultData.relation && (
         <div className="section-card card guest-matching-card fade-in">
           <div className="match-title-row">
             <Heart size={24} className="icon-pink pulse" />
