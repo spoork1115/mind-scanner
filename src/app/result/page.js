@@ -437,93 +437,93 @@ function ResultContent() {
           <h3>마인드미러 관계망 (Relation Map)</h3>
         </div>
         
-        {relations.length > 0 ? (
-          <div className="map-view-wrapper">
-            <p className="map-guide">나와 매칭된 동료들을 터치해 관계도 분석과 다른 스타일의 연결선을 확인해 보세요!</p>
-            
-            <div className="network-container">
-              {/* 관계선들을 렌더링하는 통합 SVG 캔버스 */}
-              <svg className="network-svg-canvas" width="260" height="260">
-                <defs>
-                  {/* 화살표 마커 모음 */}
-                  <marker id="arrow-pink" markerWidth="5" markerHeight="5" refX="22" refY="2.5" orient="auto">
-                    <path d="M0,0 L5,2.5 L0,5 Z" fill="#ff6584" />
-                  </marker>
-                  <marker id="arrow-green" markerWidth="5" markerHeight="5" refX="22" refY="2.5" orient="auto">
-                    <path d="M0,0 L5,2.5 L0,5 Z" fill="#2ecc71" />
-                  </marker>
-                  <marker id="arrow-blue" markerWidth="5" markerHeight="5" refX="22" refY="2.5" orient="auto">
-                    <path d="M0,0 L5,2.5 L0,5 Z" fill="#3498db" />
-                  </marker>
-                </defs>
+        <div className="map-view-wrapper">
+          <p className="map-guide">나와 매칭된 동료들을 터치해 관계도 분석과 다른 스타일의 연결선을 확인해 보세요!</p>
+          
+          <div className="network-container">
+            {/* 관계선들을 렌더링하는 통합 SVG 캔버스 */}
+            <svg className="network-svg-canvas" width="260" height="260">
+              <defs>
+                {/* 화살표 마커 모음 */}
+                <marker id="arrow-pink" markerWidth="5" markerHeight="5" refX="22" refY="2.5" orient="auto">
+                  <path d="M0,0 L5,2.5 L0,5 Z" fill="#ff6584" />
+                </marker>
+                <marker id="arrow-green" markerWidth="5" markerHeight="5" refX="22" refY="2.5" orient="auto">
+                  <path d="M0,0 L5,2.5 L0,5 Z" fill="#2ecc71" />
+                </marker>
+                <marker id="arrow-blue" markerWidth="5" markerHeight="5" refX="22" refY="2.5" orient="auto">
+                  <path d="M0,0 L5,2.5 L0,5 Z" fill="#3498db" />
+                </marker>
+              </defs>
 
-                {/* 각 노드를 잇는 연결선들을 계산하여 드로잉 */}
-                {relations.map((rel, idx) => {
-                  const angle = (idx * 360) / relations.length;
-                  const radius = 95;
-                  const rad = (angle * Math.PI) / 180;
-                  // 노드의 중심 좌표 계산
-                  const cx = 130 + radius * Math.cos(rad);
-                  const cy = 130 + radius * Math.sin(rad);
-
-                  // 관계선 스타일 및 패스 계산
-                  const lineStyle = getRelationSvgPath(rel.influenceType, cx, cy);
-
-                  return (
-                    <path
-                      key={`line-${rel.id}`}
-                      d={lineStyle.d}
-                      stroke={lineStyle.stroke}
-                      strokeWidth={lineStyle.strokeWidth}
-                      strokeDasharray={lineStyle.strokeDasharray}
-                      fill="none"
-                      markerEnd={lineStyle.markerEnd}
-                    />
-                  );
-                })}
-              </svg>
-
-              {/* 중앙 노드 (나) */}
-              <div className="center-node host-node">
-                <div className="node-avatar">
-                  <Mascot size={54} mbti={resultData.mbti} emotion={resultData.mascot} />
-                </div>
-                <span className="node-name">나</span>
-              </div>
-
-              {/* 주변 연결자 노드 배치 */}
+              {/* 각 노드를 잇는 연결선들을 계산하여 드로잉 */}
               {relations.map((rel, idx) => {
                 const angle = (idx * 360) / relations.length;
-                const radius = 95; 
+                const radius = 95;
                 const rad = (angle * Math.PI) / 180;
-                const x = Math.round(Math.cos(rad) * radius);
-                const y = Math.round(Math.sin(rad) * radius);
+                // 노드의 중심 좌표 계산
+                const cx = 130 + radius * Math.cos(rad);
+                const cy = 130 + radius * Math.sin(rad);
 
-                // 양방향 노드 판별: 내가 게스트인지 호스트인지에 따라 대상 이름 표기
-                const targetName = rel.hostId === resultId ? rel.guestName : rel.hostName || '동료';
-                const targetRole = rel.hostId === resultId ? rel.guestRole : rel.hostRole || '호스트';
-                const targetZodiac = rel.hostId === resultId ? rel.guestZodiac : rel.hostZodiac || '✨';
-                const targetMbti = rel.hostId === resultId ? rel.guestMbti : rel.hostMbti || 'ENFP';
-                const targetMood = rel.hostId === resultId ? rel.guestMood : rel.hostMood;
+                // 관계선 스타일 및 패스 계산
+                const lineStyle = getRelationSvgPath(rel.influenceType, cx, cy);
 
                 return (
-                  <div key={`node-${rel.id}`} className="guest-node-wrapper" style={{ transform: `translate(${x}px, ${y}px)` }}>
-                    <button 
-                      className={`guest-node-btn ${selectedRelation?.id === rel.id ? 'active' : ''} ${rel.hostId !== resultId ? 'host-partner' : ''}`}
-                      onClick={() => setSelectedRelation(rel)}
-                    >
-                      <span className="guest-node-zodiac">
-                        <Mascot size={32} mbti={targetMbti} emotion={targetMood || 'smile'} />
-                      </span>
-                      <span className="guest-node-name">{targetName}</span>
-                    </button>
-                  </div>
+                  <path
+                    key={`line-${rel.id}`}
+                    d={lineStyle.d}
+                    stroke={lineStyle.stroke}
+                    strokeWidth={lineStyle.strokeWidth}
+                    strokeDasharray={lineStyle.strokeDasharray}
+                    fill="none"
+                    markerEnd={lineStyle.markerEnd}
+                  />
                 );
               })}
+            </svg>
+
+            {/* 중앙 노드 (나) */}
+            <div className="center-node host-node">
+              <div className="node-avatar">
+                <Mascot size={54} mbti={resultData.mbti} emotion={resultData.mascot} />
+              </div>
+              <span className="node-name">나</span>
             </div>
 
-            {/* 선택한 동료와의 관계 상세 내용 */}
-            {selectedRelation ? (
+            {/* 주변 연결자 노드 배치 */}
+            {relations.map((rel, idx) => {
+              const angle = (idx * 360) / relations.length;
+              const radius = 95; 
+              const rad = (angle * Math.PI) / 180;
+              const x = Math.round(Math.cos(rad) * radius);
+              const y = Math.round(Math.sin(rad) * radius);
+
+              // 양방향 노드 판별: 내가 게스트인지 호스트인지에 따라 대상 이름 표기
+              const targetName = rel.hostId === resultId ? rel.guestName : rel.hostName || '동료';
+              const targetRole = rel.hostId === resultId ? rel.guestRole : rel.hostRole || '호스트';
+              const targetZodiac = rel.hostId === resultId ? rel.guestZodiac : rel.hostZodiac || '✨';
+              const targetMbti = rel.hostId === resultId ? rel.guestMbti : rel.hostMbti || 'ENFP';
+              const targetMood = rel.hostId === resultId ? rel.guestMood : rel.hostMood;
+
+              return (
+                <div key={`node-${rel.id}`} className="guest-node-wrapper" style={{ transform: `translate(${x}px, ${y}px)` }}>
+                  <button 
+                    className={`guest-node-btn ${selectedRelation?.id === rel.id ? 'active' : ''} ${rel.hostId !== resultId ? 'host-partner' : ''}`}
+                    onClick={() => setSelectedRelation(rel)}
+                  >
+                    <span className="guest-node-zodiac">
+                      <Mascot size={32} mbti={targetMbti} emotion={targetMood || 'smile'} />
+                    </span>
+                    <span className="guest-node-name">{targetName}</span>
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+
+          {relations.length > 0 ? (
+            /* 선택한 동료와의 관계 상세 내용 */
+            selectedRelation ? (
               <div className="selected-relation-detail-box fade-in">
                 <div className="detail-header">
                   <h4>{selectedRelation.hostId === resultId ? selectedRelation.guestName : selectedRelation.hostName || '호스트'}님과의 관계</h4>
@@ -542,15 +542,15 @@ function ResultContent() {
               <div className="relation-placeholder-box">
                 <p>연결선 모양과 동료 노드를 탭하면 분석 리포트가 표시됩니다.</p>
               </div>
-            )}
-          </div>
-        ) : (
-          <div className="empty-relations-view">
-            <p>아직 마인드미러에 응답한 동료가 없습니다.</p>
-            <p className="sub-text">아래 링크를 복사하여 팀원들에게 공유하고,<br />지그재그 번개선, 물결선 등 다양한 연결선을 완성해 보세요!</p>
-            <div className="arrow-down-glow">👇</div>
-          </div>
-        )}
+            )
+          ) : (
+            <div className="empty-relations-view">
+              <p>아직 마인드미러에 응답한 동료가 없습니다.</p>
+              <p className="sub-text">아래 링크를 복사하여 팀원들에게 공유하고,<br />지그재그 번개선, 물결선 등 다양한 연결선을 완성해 보세요!</p>
+              <div className="arrow-down-glow">👇</div>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* 9. 나에게 응답한 동료 리스트 */}
@@ -710,7 +710,7 @@ function ResultContent() {
         }
         .type-badge {
           display: inline-block;
-          font-family: 'Outfit', sans-serif;
+          font-family: 'Jua', sans-serif;
           background-color: hsl(var(--primary-light));
           color: hsl(var(--primary));
           font-size: 14px;
@@ -1022,7 +1022,7 @@ function ResultContent() {
           border-radius: 12px;
           border: 1px solid rgba(255, 101, 132, 0.3);
           z-index: 2;
-          font-family: 'Outfit', sans-serif;
+          font-family: 'Jua', sans-serif;
         }
         .line-heart-bg {
           margin-top: -10px;
@@ -1121,7 +1121,7 @@ function ResultContent() {
           border-left: 1.5px solid #fff;
         }
         .percent-text {
-          font-family: 'Outfit', sans-serif;
+          font-family: 'Jua', sans-serif;
         }
 
         .meaning-box {
@@ -1331,7 +1331,7 @@ function ResultContent() {
           color: hsl(var(--text-dark));
         }
         .compat-score-badge {
-          font-family: 'Outfit', sans-serif;
+          font-family: 'Jua', sans-serif;
           background-color: #ff6584;
           color: #fff;
           font-size: 13px;
@@ -1466,7 +1466,7 @@ function ResultContent() {
           margin-top: 2px;
         }
         .item-score {
-          font-family: 'Outfit', sans-serif;
+          font-family: 'Jua', sans-serif;
           font-size: 14.5px;
           font-weight: 800;
           color: #ff6584;
@@ -1524,7 +1524,7 @@ function ResultContent() {
           font-size: 11px;
           font-weight: 800;
           color: #e74c3c;
-          font-family: 'Outfit', sans-serif;
+          font-family: 'Jua', sans-serif;
         }
         .welfare-buy-btn {
           font-size: 9px;

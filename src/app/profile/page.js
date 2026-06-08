@@ -261,7 +261,7 @@ export default function ProfilePage() {
           display: flex;
           flex-direction: column;
           height: auto;
-          padding-bottom: 120px;
+          padding-bottom: 20px;
           font-family: 'Jua', sans-serif;
         }
         .top-nav {
@@ -310,7 +310,7 @@ export default function ProfilePage() {
           display: flex;
           flex-direction: column;
           gap: 4px;
-          margin-bottom: 110px;
+          margin-bottom: 20px;
         }
         .form-group {
           margin-bottom: 8px;
