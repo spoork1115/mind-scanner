@@ -1,11 +1,24 @@
 import { createClient } from '@supabase/supabase-js'
 
 // Vercel 환경 변수에서 Supabase 설정 불러오기
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://dummy-url.supabase.co';
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'dummy-key';
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-// Create a single supabase client
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+// 실제 Supabase 설정이 비어있거나 dummy 값인 경우 인메모리 데이터베이스를 사용하도록 판단
+const isDummy = !supabaseUrl || !supabaseAnonKey || supabaseUrl.includes('dummy-url');
+
+if (isDummy) {
+  console.warn('[Supabase] Environment variables are missing or invalid. Falling back to In-Memory Database.');
+}
+
+// Create a single supabase client if configuration is valid
+const supabase = !isDummy ? createClient(supabaseUrl, supabaseAnonKey) : null;
+
+// 인메모리 DB 스토어
+const memoryStore = {
+  participants: [],
+  relations: []
+};
 
 export const db = {
   // DB 초기화 함수는 Supabase 환경에서는 불필요하나 이전 코드 호환성을 위해 빈 함수 유지
@@ -13,6 +26,9 @@ export const db = {
 
   // 전체 리스트 조회
   getParticipants: async () => {
+    if (isDummy) {
+      return memoryStore.participants;
+    }
     try {
       const { data, error } = await supabase
         .from('participants')
@@ -30,13 +46,23 @@ export const db = {
   
   // 신규 등록
   addParticipant: async (participant) => {
+    const newRecord = {
+      ...participant,
+      id: participant.id || 'usr-' + Math.random().toString(36).substr(2, 9),
+      registeredAt: new Date().toISOString()
+    };
+
+    if (isDummy) {
+      const idx = memoryStore.participants.findIndex(p => p.id === newRecord.id);
+      if (idx > -1) {
+        memoryStore.participants[idx] = newRecord;
+      } else {
+        memoryStore.participants.push(newRecord);
+      }
+      return newRecord;
+    }
+
     try {
-      const newRecord = {
-        ...participant,
-        id: participant.id || 'usr-' + Math.random().toString(36).substr(2, 9),
-        registeredAt: new Date().toISOString()
-      };
-      
       const { data, error } = await supabase
         .from('participants')
         .insert([newRecord])
@@ -55,6 +81,9 @@ export const db = {
 
   // 관계 전체 조회
   getRelations: async () => {
+    if (isDummy) {
+      return memoryStore.relations;
+    }
     try {
       const { data, error } = await supabase
         .from('relations')
@@ -72,8 +101,27 @@ export const db = {
 
   // 특정 사용자가 호스트이거나 게스트인 관계 목록 전체 조회
   getRelationsByUser: async (userId) => {
+    if (isDummy) {
+      const relations = memoryStore.relations.filter(r => r.hostId === userId || r.guestId === userId);
+      
+      const hostIds = relations
+        .filter(r => r.guestId === userId)
+        .map(r => r.hostId);
+
+      if (hostIds.length > 0) {
+        const networkRelations = memoryStore.relations.filter(r => hostIds.includes(r.hostId));
+        const combined = [...relations];
+        networkRelations.forEach(nr => {
+          if (!combined.some(c => c.id === nr.id)) {
+            combined.push(nr);
+          }
+        });
+        return combined;
+      }
+      return relations;
+    }
+
     try {
-      // Supabase의 or 필터를 사용하여 hostId나 guestId가 일치하는 관계를 찾습니다.
       const { data: directRelations, error } = await supabase
         .from('relations')
         .select('*')
@@ -119,6 +167,9 @@ export const db = {
 
   // 특정 호스트에 대한 게스트의 관계도 목록 조회
   getRelationsByHost: async (hostId) => {
+    if (isDummy) {
+      return memoryStore.relations.filter(r => r.hostId === hostId);
+    }
     try {
       const { data, error } = await supabase
         .from('relations')
@@ -138,13 +189,23 @@ export const db = {
 
   // 관계 추가
   addRelation: async (relation) => {
-    try {
-      const newRelation = {
-        ...relation,
-        id: relation.id || 'rel-' + Math.random().toString(36).substr(2, 9),
-        registeredAt: new Date().toISOString()
-      };
+    const newRelation = {
+      ...relation,
+      id: relation.id || 'rel-' + Math.random().toString(36).substr(2, 9),
+      registeredAt: new Date().toISOString()
+    };
 
+    if (isDummy) {
+      const idx = memoryStore.relations.findIndex(r => r.id === newRelation.id);
+      if (idx > -1) {
+        memoryStore.relations[idx] = newRelation;
+      } else {
+        memoryStore.relations.push(newRelation);
+      }
+      return newRelation;
+    }
+
+    try {
       const { data, error } = await supabase
         .from('relations')
         .insert([newRelation])
@@ -163,10 +224,16 @@ export const db = {
 
   // 오래된 데이터 파기
   cleanupExpired: async () => {
-    try {
-      const now = new Date();
-      const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
+    const now = new Date();
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
 
+    if (isDummy) {
+      memoryStore.participants = memoryStore.participants.filter(p => p.registeredAt >= todayStart);
+      memoryStore.relations = memoryStore.relations.filter(r => r.registeredAt >= todayStart);
+      return { success: true };
+    }
+
+    try {
       // participants 정리
       const { error: pError } = await supabase
         .from('participants')
@@ -189,4 +256,4 @@ export const db = {
       return { success: false };
     }
   }
-};
+}
